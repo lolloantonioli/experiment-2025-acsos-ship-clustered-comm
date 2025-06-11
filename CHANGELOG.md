@@ -1,3 +1,13 @@
+## [1.0.68](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/compare/1.0.67...1.0.68) (2025-06-11)
+
+### Bug Fixes
+
+* **deps:** update danysk/build-check-deploy-gradle-action action to v4 ([#95](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/issues/95)) ([b758bce](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/b758bce4c58c81d7a1949c010b2f93b528a50992))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.0.67 [skip ci] ([d35a3fd](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/d35a3fd465c6719f59d58a10719081370c50e7d5))
+
 ## [1.0.67](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/compare/1.0.66...1.0.67) (2025-06-08)
 
 ### Bug Fixes
