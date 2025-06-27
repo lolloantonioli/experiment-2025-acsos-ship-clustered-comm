@@ -1,3 +1,13 @@
+## [1.0.75](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/compare/1.0.74...1.0.75) (2025-06-27)
+
+### Bug Fixes
+
+* **deps:** update node.js to 22.17 ([#104](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/issues/104)) ([061956d](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/061956d844affca47a5264bf134b356092a4bad2))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.0.74 [skip ci] ([470f98c](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/470f98cbbf7d9775f0fcd9ca5e4016f4dc30a996))
+
 ## [1.0.74](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/compare/1.0.73...1.0.74) (2025-06-24)
 
 ### Bug Fixes
