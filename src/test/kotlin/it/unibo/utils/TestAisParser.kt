@@ -1,20 +1,20 @@
-package it.unibo.utils.ais
+package it.unibo.utils
 
 import it.unibo.util.ais.AisCustomMessageParser
 import it.unibo.util.ais.AisDecoder
 import it.unibo.util.ais.AisPayload
 import it.unibo.util.gpx.GpxFormatter
-import org.junit.jupiter.api.assertDoesNotThrow
 import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 class TestAisParser {
 
-    val dataToParse = File(object {}.javaClass.classLoader.getResource("ais-sample/20250506-130000.nmea.txt")?.toURI()
-        ?: throw IllegalArgumentException("Missing sample file in project resources"))
+    val dataToParse = File(
+        object {}.javaClass.classLoader.getResource("ais-sample/20250506-130000.nmea.txt")?.toURI()
+            ?: throw IllegalArgumentException("Missing sample file in project resources")
+    )
 
     @Test
     fun testParseFile() {
@@ -28,7 +28,7 @@ class TestAisParser {
         val aisMessage = AisDecoder.parseFile(dataToParse)
         assertTrue(aisMessage.isNotEmpty())
         println(aisMessage)
-        val aisPayloads = AisPayload.from(aisMessage)
+        val aisPayloads = AisPayload.Companion.from(aisMessage)
         println(aisPayloads)
     }
 
@@ -36,7 +36,7 @@ class TestAisParser {
     fun testDeriveNumberOfBoats(){
         val aisMessage = AisDecoder.parseFile(dataToParse)
         assertTrue(aisMessage.isNotEmpty())
-        val aisPayloads = AisPayload.from(aisMessage)
+        val aisPayloads = AisPayload.Companion.from(aisMessage)
         val groupedByBoat = aisPayloads.groupBy { it.boatId }
         println(groupedByBoat.count())
         println(groupedByBoat)
@@ -48,7 +48,7 @@ class TestAisParser {
         assertTrue(aisMessage.isNotEmpty())
         val xmlPath = File("src/main/resources/ais-sample/gpx-traces")
         xmlPath.mkdirs()
-        val aisPayloads = AisPayload.from(aisMessage)
+        val aisPayloads = AisPayload.Companion.from(aisMessage)
         val groupedByBoat = aisPayloads.groupBy { it.boatId }
         println(groupedByBoat.count())
         GpxFormatter.createGpxFileFromAisData(groupedByBoat.entries.first().value, xmlPath)
