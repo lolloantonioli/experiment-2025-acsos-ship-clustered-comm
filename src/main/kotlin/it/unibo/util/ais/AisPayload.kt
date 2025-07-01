@@ -12,18 +12,21 @@ data class AisPayload(
     val latitude: Double,
 ) {
     companion object {
-
-        fun from(boatId: Int, timestamp: Instant, aisMessage: AisMessage): AisPayload? {
-            return if (
+        fun from(
+            boatId: Int,
+            timestamp: Instant,
+            aisMessage: AisMessage,
+        ): AisPayload? =
+            if (
                 aisMessage is IPositionMessage &&
                 ParsingUtils.validateLongitude(aisMessage.pos.longitudeDouble) &&
                 ParsingUtils.validateLatitude(aisMessage.pos.latitudeDouble)
             ) {
                 AisPayload(boatId, timestamp, aisMessage.pos.longitudeDouble, aisMessage.pos.latitudeDouble)
-            } else null
-        }
-        fun from(map: Map<Instant, AisMessage>): List<AisPayload> =
-            map.map { from(it.value.userId, it.key, it.value) }.filterNotNull()
+            } else {
+                null
+            }
+
+        fun from(map: Map<Instant, AisMessage>): List<AisPayload> = map.map { from(it.value.userId, it.key, it.value) }.filterNotNull()
     }
 }
-

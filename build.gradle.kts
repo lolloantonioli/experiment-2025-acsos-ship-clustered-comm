@@ -1,14 +1,14 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.awt.GraphicsEnvironment
 import java.io.ByteArrayOutputStream
-import java.util.*
+import java.util.Locale
 
 plugins {
     application
     alias(libs.plugins.gitSemVer)
     alias(libs.plugins.collektive)
     alias(libs.plugins.kotlin.jvm)
- //   alias(libs.plugins.kotlin.qa)
+    alias(libs.plugins.kotlin.qa)
     alias(libs.plugins.multiJvmTesting)
     alias(libs.plugins.taskTree)
 }
@@ -36,7 +36,6 @@ sourceSets {
     test {
         resources {
             srcDir("src/main/resources")
-
         }
     }
 }
@@ -84,19 +83,21 @@ val createGpxRoutes by tasks.registering(JavaExec::class) {
 
 // Heap size estimation for batches
 val maxHeap: Long? by project
-val heap: Long = maxHeap ?: if (System.getProperty("os.name").lowercase().contains("linux")) {
-    ByteArrayOutputStream().use { output ->
-        exec {
-            executable = "bash"
-            args = listOf("-c", "cat /proc/meminfo | grep MemAvailable | grep -o '[0-9]*'")
-            standardOutput = output
-        }
-        output.toString().trim().toLong() / 1024
-    }.also { println("Detected ${it}MB RAM available.") } * 9 / 10
-} else {
-    // Guess 16GB RAM of which 2 used by the OS
-    14 * 1024L
-}
+val heap: Long =
+    maxHeap ?: if (System.getProperty("os.name").lowercase().contains("linux")) {
+        ByteArrayOutputStream()
+            .use { output ->
+                exec {
+                    executable = "bash"
+                    args = listOf("-c", "cat /proc/meminfo | grep MemAvailable | grep -o '[0-9]*'")
+                    standardOutput = output
+                }
+                output.toString().trim().toLong() / 1024
+            }.also { println("Detected ${it}MB RAM available.") } * 9 / 10
+    } else {
+        // Guess 16GB RAM of which 2 used by the OS
+        14 * 1024L
+    }
 val taskSizeFromProject: Int? by project
 val taskSize = taskSizeFromProject ?: 768
 val threadCount = maxOf(1, minOf(Runtime.getRuntime().availableProcessors(), heap.toInt() / taskSize))
@@ -129,11 +130,15 @@ fun String.capitalizeString(): String =
 /*
  * Scan the folder with the simulation files, and create a task for each one of them.
  */
-File(rootProject.rootDir.path + "/src/main/yaml").listFiles()
+File(rootProject.rootDir.path + "/src/main/yaml")
+    .listFiles()
     ?.filter { it.extension == "yml" }
     ?.sortedBy { it.nameWithoutExtension }
     ?.forEach {
-        fun basetask(name: String, additionalConfiguration: JavaExec.() -> Unit = {}) = tasks.register<JavaExec>(name) {
+        fun basetask(
+            name: String,
+            additionalConfiguration: JavaExec.() -> Unit = {},
+        ) = tasks.register<JavaExec>(name) {
             description = "Launches graphic simulation ${it.nameWithoutExtension}"
             mainClass.set("it.unibo.alchemist.Alchemist")
             classpath = sourceSets["main"].runtimeClasspath
@@ -159,7 +164,7 @@ File(rootProject.rootDir.path + "/src/main/yaml").listFiles()
                 "--override",
                 "launcher: { parameters: { batch: [], autoStart: true } }",
                 "--verbosity",
-                "error"
+                "error",
             )
         }
         runAllGraphic.dependsOn(graphic)
@@ -170,7 +175,7 @@ File(rootProject.rootDir.path + "/src/main/yaml").listFiles()
             File("data").mkdirs()
             args(
                 "--verbosity",
-                "error"
+                "error",
             )
         }
         runAllBatch.dependsOn(batch)

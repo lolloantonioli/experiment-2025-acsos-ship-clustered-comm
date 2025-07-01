@@ -10,18 +10,20 @@ import it.unibo.alchemist.model.molecules.SimpleMolecule
 import java.io.File
 
 /**
+ * Loads the Id of the boat from the GPX trace
  * @param <T> Concentration type
  */
 class LoadIdFromTrace<T>(
     val environment: NavigationEnvironment<T>,
     node: Node<T>,
-    val path: String
+    val path: String,
 ) : AbstractAction<T>(
-    node
-) {
-    override fun cloneAction(p0: Node<T>?, p1: Reaction<T>?): Action<T> {
-        return LoadIdFromTrace(environment, p0!!, path)
-    }
+        node,
+    ) {
+    override fun cloneAction(
+        p0: Node<T>?,
+        p1: Reaction<T>?,
+    ): Action<T> = LoadIdFromTrace(environment, p0!!, path)
 
     override fun execute() {
         val resources = javaClass.classLoader.getResource(path)?.let { File(it.toURI()) }
@@ -37,5 +39,4 @@ class LoadIdFromTrace<T>(
     }
 
     override fun getContext(): Context = Context.LOCAL
-
 }

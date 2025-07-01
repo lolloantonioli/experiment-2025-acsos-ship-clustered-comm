@@ -3,6 +3,27 @@
 
 ## Getting started
 
+Relevant files of this artifact are briefly described here:
+```md
+experiment-2025-acsos-ship-clustered-comm
+├── data/...                            # Data from previously executed simulations to generate charts
+├── docker
+│   ├── charts/Dockerfile               # Dockerfile that generated the charts
+│   └── sim/Dockerfile                  # Dockerfile executing the simulation
+├── effects/...                         # Graphic effects for simulation on GUI
+├── src
+│   ├── main
+│   │   ├── kotlin/it/unibo/...         # experiment source code
+│   │   ├── resources
+│   │   │   ├── ais-sample/...          # Example of AIS packages
+│   │   │   ├── maps/...                # Geographical info. for Kiel area (geojson and pbf formats)
+│   │   │   └── navigation-routes/...   # GPX Traces of vessels extracted from AIS data and anonimised 
+│   │   └── yaml/simulation.yml         # Alchemist simulation configuration file
+│   └── test/...                        # Unit tests for AIS->GPX and GEOJSON parsing  
+├── docker-compose.yml                  
+└── process.py                          # Python script to generate charts from data/*
+```
+
 The experiment is composed of two parts:
 1. [Full-Run] the execution of simulation, which generates raw data
 2. [Quick-Run] the manipulation of the raw data to generate charts
@@ -11,7 +32,6 @@ The experiment is composed of two parts:
 **WARNING**: re-running the whole experiment may take a very long time on a normal computer.
 
 ### Reproduce with containers (recommended)
-
 1. Install **Docker** and **docker-compose**
 2. Run `docker-compose up`
 3. The charts will be available in the `charts` folder.
@@ -34,7 +54,20 @@ The experiment is composed of two parts:
     - `python process.py`
 5. The charts will be available in the `charts` folder.
 
-## [Quick-Run] Regenerate the charts (2)
+## Quick Start
+
+### Run Single Graphical Experiment
+Follow the instructions for reproducing the entire experiment natively, but instead of running `runAllBatch`,
+run `./gradlew runSimulationGraphic`.
+
+The simulation will start automatically.
+
+To make changes to existing experiments and explore/reuse,
+we recommend to use the **IntelliJ Idea IDE**.
+Opening the project in IntelliJ Idea will automatically import the project, download the dependencies,
+and allow for a smooth development experience.
+
+### Regenerate the charts
 
 We keep a copy of the data in this repository,
 so that the charts can be regenerated without having to run the experiment again.
@@ -42,11 +75,9 @@ To regenerate the charts, run `docker compose run --no-deps charts`.
 Alternatively, follow the steps or the "reproduce natively" section,
 starting from step 4.
 
-## Artifact Description
+The charts will be available in the `charts` folder.
 
-
-
-### Reproducibility
+## Reproducibility
 
 This artifact is generated, validated, and published with a GitHub Actions CI/CD pipeline,
 its configuration is consultable in the file `.github/workflows/build-and-deploy.yml`.
@@ -67,38 +98,5 @@ On top of this process,
 dependencies are automatically updated using [Renovate](https://docs.renovatebot.com/) (configured in `renovate.json` file),
 and automatically tested before their inclusion in the `main` branch.
 
-### Code Structure
-
-Relevant files of this artifact are briefly described here:
-```md
-experiment-2025-acsos-ship-clustered-comm
-├── data/...
-├── docker
-│   ├── charts/Dockerfile
-│   └── sim/Dockerfile
-├── effects/...
-├── src
-│   ├── main
-│   │   ├── kotlin/it/unibo/...
-│   │   ├── resources
-│   │   │   ├── ais-sample/...
-│   │   │   ├── maps/...
-│   │   │   └── navigation-routes/...
-│   │   └── yaml/simulation.yml
-│   └── test/...
-├── docker-compose.yml
-└── process.py                          # Python script to generate charts from data/*
-```
-
-Follow the instructions for reproducing the entire experiment natively, but instead of running `runAllBatch`,
-run `runEXPERIMENTGraphics`, replacing `EXPERIMENT` with the name of the experiment you want to run
-(namely, with the name of the YAML simulation file, that can be found under `src/main/yaml` folder).
-
-If in doubt, run `./gradlew tasks` to see the list of available tasks.
-
-To make changes to existing experiments and explore/reuse,
-we recommend to use the IntelliJ Idea IDE.
-Opening the project in IntelliJ Idea will automatically import the project, download the dependencies,
-and allow for a smooth development experience.
 
 

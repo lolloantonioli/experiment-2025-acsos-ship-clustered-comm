@@ -6,22 +6,41 @@ import it.unibo.alchemist.model.Environment
 import it.unibo.alchemist.model.Node
 import it.unibo.alchemist.model.Position2D
 import it.unibo.alchemist.model.molecules.SimpleMolecule
-import it.unibo.util.*
-import java.awt.*
+import it.unibo.util.iAmLeader
+import it.unibo.util.iAmRelay
+import it.unibo.util.intraClusterRelay
+import it.unibo.util.leader
+import it.unibo.util.relay
+import it.unibo.util.toBoolean
+import it.unibo.util.toDouble
+import it.unibo.util.toInt
+import java.awt.BasicStroke
+import java.awt.Color
+import java.awt.Graphics2D
+import java.awt.Point
+import java.awt.Polygon
 import java.awt.geom.AffineTransform
 import kotlin.math.atan2
 import kotlin.math.roundToInt
 
-
+/**
+ * Custom Effect to represent network connections in the Alchemist simulation graphical interface.
+ * This effect highlights the communication flows between simulation nodes.
+ *
+ * The effect is visible when executing the simulation with the graphical interface.
+ *
+ * The object is deprecated because Alchemist deprecated its Swing GUI package,
+ * however, no alternative is available to date, so this customization inherits deprecation.
+ */
 @Suppress("DEPRECATION")
-class DrawNetwork: Effect {
+class DrawNetwork : Effect {
     override fun getColorSummary(): Color = Color.RED
 
     override fun <T : Any?, P : Position2D<P>> apply(
         graphics: Graphics2D,
         node: Node<T>,
         environment: Environment<T, P>,
-        wormhole: Wormhole2D<P>
+        wormhole: Wormhole2D<P>,
     ) {
         super.apply(graphics, node, environment, wormhole)
         val is5GAntenna = node.getConcentration(SimpleMolecule("5gAntenna")).toBoolean()
@@ -49,14 +68,12 @@ class DrawNetwork: Effect {
                         val intermediatePosition = wormhole.getViewPoint(environment.getPosition(intermediate))
                         graphics.drawLine(myPosition.x, myPosition.y, intermediatePosition.x, intermediatePosition.y)
                         Arrow().drawArrowHead(graphics, myPosition, intermediatePosition)
-
                     } else {
                         // I directly communicate with the leader.
                         val leader = environment.getNodeByID(myLeader)
                         val leaderPosition = wormhole.getViewPoint(environment.getPosition(leader))
                         graphics.drawLine(myPosition.x, myPosition.y, leaderPosition.x, leaderPosition.y)
                         Arrow().drawArrowHead(graphics, myPosition, leaderPosition)
-
                     }
                 } else if (imLeader && myRelay != myId) {
                     val relayCandidate = environment.getNodeByID(myRelay)
@@ -70,7 +87,13 @@ class DrawNetwork: Effect {
         }
     }
 }
-class Arrow(size: Int = 5) {
+
+/**
+ * Representation of directed connection between two nodes in a bidimensional canvas.
+ */
+class Arrow(
+    size: Int = 5,
+) {
     private val arrowHead = Polygon()
 
     init {
@@ -78,17 +101,38 @@ class Arrow(size: Int = 5) {
         arrowHead.addPoint(size, 0)
         arrowHead.addPoint(-size, -size)
         arrowHead.addPoint(-size, size)
-        //arrowHead.addPoint (0, 0); // Another style
+        // arrowHead.addPoint (0, 0); // Another style
     }
 
-    fun drawArrowHead(g: Graphics2D, from: Point, to: Point) {
+    /**
+     * Draws a line with an arrow in the bidimensional canvas provided as argument.
+     * @param graphics the [Graphics2D] canvas
+     * @param from the starting [Point] in the canvas
+     * @param to the destination [Point] in the canvas
+     */
+    fun drawArrowHead(
+        graphics: Graphics2D,
+        from: Point,
+        to: Point,
+    ) {
         val midpoint = midpoint(from, to)
         val tx = AffineTransform.getTranslateInstance(midpoint.x.toDouble(), midpoint.y.toDouble())
         tx.rotate(atan2((to.y - from.y).toDouble(), (to.x - from.x).toDouble()))
-        g.fill(tx.createTransformedShape(arrowHead))
+        graphics.fill(tx.createTransformedShape(arrowHead))
     }
-    private fun midpoint(p1: Point, p2: Point): Point = Point(
-        ((p1.x + p2.x) / 2.0).roundToInt(),
-        ((p1.y + p2.y) / 2.0).roundToInt(),
-    )
+
+    /**
+     * Computes the midpoint of a given segment.
+     * @param p1 one [Point] of the segment
+     * @param p2 the other [Point] of the segment
+     * @return the middle [Point]
+     */
+    private fun midpoint(
+        p1: Point,
+        p2: Point,
+    ): Point =
+        Point(
+            ((p1.x + p2.x) / 2.0).roundToInt(),
+            ((p1.y + p2.y) / 2.0).roundToInt(),
+        )
 }

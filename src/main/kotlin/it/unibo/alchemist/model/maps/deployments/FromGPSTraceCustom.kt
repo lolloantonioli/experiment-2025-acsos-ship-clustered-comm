@@ -12,7 +12,6 @@ import it.unibo.alchemist.boundary.gps.loaders.TraceLoader
 import it.unibo.alchemist.model.Deployment
 import it.unibo.alchemist.model.GeoPosition
 import it.unibo.alchemist.model.maps.GPSTrace
-import java.io.File
 import java.util.stream.Stream
 import java.util.stream.StreamSupport
 
@@ -22,14 +21,13 @@ import java.util.stream.StreamSupport
 class FromGPSTraceCustom(
     private val traces: TraceLoader,
 ) : Deployment<GeoPosition> {
-
-    constructor(path: String, normalizer: String, vararg normalizerArgs: Any): this(
-        TraceLoader(path, false, normalizer, *normalizerArgs)
+    constructor(path: String, normalizer: String, vararg normalizerArgs: Any) : this(
+        TraceLoader(path, false, normalizer, *normalizerArgs),
     )
 
-    override fun stream(): Stream<GeoPosition> {
-        return StreamSupport.stream(traces.spliterator(), false)
+    override fun stream(): Stream<GeoPosition> =
+        StreamSupport
+            .stream(traces.spliterator(), false)
             .limit(traces.size().get().toLong())
             .map { obj: GPSTrace -> obj.initialPosition }
-    }
 }

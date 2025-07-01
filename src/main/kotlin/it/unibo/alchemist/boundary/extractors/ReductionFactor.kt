@@ -17,55 +17,65 @@ import kotlin.collections.component1
 import kotlin.collections.component2
 
 /**
- * Reduction factor := sum(intra-cluster-data-rate)/sum(inter-cluster-data-rate)
- *
+ * Computation of the reduction factor metrics.
+ * Reduction factor := sum(intra-cluster-data-rate)/sum(inter-cluster-data-rate).
  */
-class ReductionFactor @JvmOverloads constructor(
-    aggregatorNames: List<String> = listOf("mean", "median", "StandardDeviation"),
-    precision: Int? = 3,
-) : AbstractAggregatingDoubleExporter(
-    CommonFilters.ONLYFINITE.filteringPolicy,
-    aggregatorNames,
-    precision,
-) {
+class ReductionFactor
+    @JvmOverloads
+    constructor(
+        aggregatorNames: List<String> = listOf("mean", "median", "StandardDeviation"),
+        precision: Int? = 3,
+    ) : AbstractAggregatingDoubleExporter(
+            CommonFilters.ONLYFINITE.filteringPolicy,
+            aggregatorNames,
+            precision,
+        ) {
+        override val columnName: String = "reduction-factor"
 
-    override val columnName: String = "reduction-factor"
+        override fun <T> getData(
+            environment: Environment<T, *>,
+            reaction: Actionable<T>?,
+            time: Time,
+            step: Long,
+        ): Map<Node<T>, Double> = clusterRatios(environment)
 
-    override fun <T> getData(
-        environment: Environment<T, *>,
-        reaction: Actionable<T>?,
-        time: Time,
-        step: Long
-    ): Map<Node<T>, Double> = clusterRatios(environment)
-
-    companion object {
-    }
-}
-
-fun <T> clusterRatios(environment: Environment<T, *>): Map<Node<T>, Double> {
-    // find clusters by grouping nodes by leader
-    val clusters = environment.nodes
-        .groupBy { it.getConcentration(leader) }
-        .filterKeys { it is Number } // filter out nodes non participating in the clustering (5g towers)
-        .mapKeys { environment.getNodeByID(it.key.toInt()) }
-    return clusters.flatMap { (leader: Node<T>, members: List<Node<T>>) ->
-        // Compute the ratio for each cluster
-        val clusterRatio: Double = when {
-            members.size == 1 -> Double.NaN
-            leader.contains(station) -> 1.0 // If the leader is a station, the reduction factor is 1
-            else -> {
-                val optimalTransmission = members.asSequence()
-                    .filter { it != leader }
-                    .map { it.getConcentration(intraClusterDR) }
-                    .map { it.toDouble() } // kbps
-                    .filter { it.isFinite() }
-                    .map { it.coerceAtMost(3000.0) } // 3mbit
-                    .sum()
-                val maxInterCluster = leader.getConcentration(interClusterDR).toDouble()
-                minOf(maxInterCluster / optimalTransmission, 1.0)
+        companion object {
+            /**
+             * Computes the ratio: sum(intra-cluster-data-rate)/sum(inter-cluster-data-rate).
+             * @param environment the Alchemist [Environment] from which nodes information are gathered.
+             * @return a [Map] of each node and its Reduction Factor associated value.
+             **/
+            fun <T> clusterRatios(environment: Environment<T, *>): Map<Node<T>, Double> {
+                // find clusters by grouping nodes by leader
+                val clusters =
+                    environment.nodes
+                        .groupBy { it.getConcentration(leader) }
+                        .filterKeys { it is Number } // filter out nodes non participating in the clustering (5g towers)
+                        .mapKeys { environment.getNodeByID(it.key.toInt()) }
+                return clusters
+                    .flatMap { (leader: Node<T>, members: List<Node<T>>) ->
+                        // Compute the ratio for each cluster
+                        val clusterRatio: Double =
+                            when {
+                                members.size == 1 -> Double.NaN
+                                leader.contains(station) -> 1.0 // If the leader is a station, the reduction factor is 1
+                                else -> {
+                                    val optimalTransmission =
+                                        members
+                                            .asSequence()
+                                            .filter { it != leader }
+                                            .map { it.getConcentration(intraClusterDR) }
+                                            .map { it.toDouble() } // kbps
+                                            .filter { it.isFinite() }
+                                            .map { it.coerceAtMost(3000.0) } // 3mbit
+                                            .sum()
+                                    val maxInterCluster = leader.getConcentration(interClusterDR).toDouble()
+                                    minOf(maxInterCluster / optimalTransmission, 1.0)
+                                }
+                            }
+                        // Assign each member of the cluster the cluster ratio
+                        members.asSequence().map { it to clusterRatio }
+                    }.toMap()
             }
         }
-        // Assign each member of the cluster the cluster ratio
-        members.asSequence().map { it to clusterRatio }
-    }.toMap()
-}
+    }

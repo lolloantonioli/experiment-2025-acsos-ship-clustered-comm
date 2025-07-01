@@ -8,18 +8,17 @@ import java.awt.Graphics2D
 class DrawPoligonVisitor(
     val graphics2D: Graphics2D,
     val wormhole2D: Wormhole2D<GeoPosition>,
-): GeoJsonObjectVisitor<Unit> {
-
+) : GeoJsonObjectVisitor<Unit> {
     override fun visit(geoJsonObject: Point) {
-        val viewP = wormhole2D.getViewPoint(geoJsonObject.coordinates.toLatLongPosition());
+        val viewP = wormhole2D.getViewPoint(geoJsonObject.coordinates.toLatLongPosition())
         graphics2D.fillOval(viewP.x - 2, viewP.y - 2, 4, 4)
     }
 
     override fun visit(geoJsonObject: LineString) {
         val coordinates = geoJsonObject.coordinates
         for (i in 0 until coordinates.size - 1) {
-            val viewP1 = wormhole2D.getViewPoint(coordinates[i].toLatLongPosition());
-            val viewP2 = wormhole2D.getViewPoint(coordinates[i+1].toLatLongPosition());
+            val viewP1 = wormhole2D.getViewPoint(coordinates[i].toLatLongPosition())
+            val viewP2 = wormhole2D.getViewPoint(coordinates[i + 1].toLatLongPosition())
 
             graphics2D.drawLine(viewP1.x, viewP1.y, viewP2.x, viewP2.y)
         }
@@ -32,7 +31,7 @@ class DrawPoligonVisitor(
         val yPoints = IntArray(n)
 
         for (i in 0 until n) {
-            val viewP = wormhole2D.getViewPoint(coordinates[i].toLatLongPosition());
+            val viewP = wormhole2D.getViewPoint(coordinates[i].toLatLongPosition())
             xPoints[i] = viewP.x
             yPoints[i] = viewP.y
         }

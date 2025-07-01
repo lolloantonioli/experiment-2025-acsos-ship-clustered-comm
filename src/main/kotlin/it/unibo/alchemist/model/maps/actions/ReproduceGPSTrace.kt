@@ -20,8 +20,7 @@ import it.unibo.alchemist.model.movestrategies.speed.ConstantSpeed
  * @param <O> [RoutingServiceOptions] type
  * @param <S> [RoutingService] type
 </S></O></T> */
-class ReproduceGPSTrace<T, O : RoutingServiceOptions<O>, S : RoutingService<GeoPosition, O>>
-    : MoveOnMapWithGPS<T, O, S> {
+class ReproduceGPSTrace<T, O : RoutingServiceOptions<O>, S : RoutingService<GeoPosition, O>> : MoveOnMapWithGPS<T, O, S> {
     /**
      * @param environment
      * the environment
@@ -47,13 +46,17 @@ class ReproduceGPSTrace<T, O : RoutingServiceOptions<O>, S : RoutingService<GeoP
         path: String,
         cycle: Boolean,
         normalizer: String,
-        vararg normalizerArgs: Any
+        vararg normalizerArgs: Any,
     ) : super(
-        environment, node,
+        environment,
+        node,
         IgnoreStreets<T, GeoPosition>(),
         StraightLineTraceDependantSpeed<T, O, S>(environment, node, reaction),
         FollowTrace<T>(reaction),
-        path, cycle, normalizer, *normalizerArgs
+        path,
+        cycle,
+        normalizer,
+        *normalizerArgs,
     )
 
     /**
@@ -84,17 +87,17 @@ class ReproduceGPSTrace<T, O : RoutingServiceOptions<O>, S : RoutingService<GeoP
         path: String,
         cycle: Boolean,
         normalizer: String,
-        vararg normalizerArgs: Any
+        vararg normalizerArgs: Any,
     ) : super(
         environment,
         node,
         IgnoreStreets<T, GeoPosition>(),
-        //GPSNavigationRouteConsideringShoreline(environment),
+        // GPSNavigationRouteConsideringShoreline(environment),
         ConstantSpeed<T, GeoPosition>(reaction, speed),
         FollowTrace<T>(reaction),
         path,
         cycle,
         normalizer,
-        *normalizerArgs
+        *normalizerArgs,
     )
 }

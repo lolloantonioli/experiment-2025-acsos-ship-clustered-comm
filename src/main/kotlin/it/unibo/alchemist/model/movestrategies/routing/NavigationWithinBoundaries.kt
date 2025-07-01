@@ -10,17 +10,20 @@ import org.apache.commons.math3.random.RandomGenerator
 import kotlin.math.*
 
 class NavigationWithinBoundaries<T>(
-    private val environment : NavigationEnvironment<T>,
+    private val environment: NavigationEnvironment<T>,
     private val randomGenerator: RandomGenerator,
-): RoutingStrategy<T, GeoPosition> {
-
-    override fun computeRoute(currentPos: GeoPosition, finalPos: GeoPosition): Route<GeoPosition> {
+) : RoutingStrategy<T, GeoPosition> {
+    override fun computeRoute(
+        currentPos: GeoPosition,
+        finalPos: GeoPosition,
+    ): Route<GeoPosition> {
         var destination = finalPos
         while (!environment.isPositionNavigable(destination)) {
-            destination = LatLongPosition(
-                (currentPos.latitude + finalPos.latitude) / 2,
-                (currentPos.longitude + finalPos.longitude) / 2,
-            )
+            destination =
+                LatLongPosition(
+                    (currentPos.latitude + finalPos.latitude) / 2,
+                    (currentPos.longitude + finalPos.longitude) / 2,
+                )
         }
         return PolygonalChain(currentPos, destination)
     }

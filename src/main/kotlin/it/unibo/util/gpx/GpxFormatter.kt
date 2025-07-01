@@ -4,12 +4,15 @@ import it.unibo.util.ais.AisPayload
 import java.io.File
 
 object GpxFormatter {
-    fun createGpxFileFromAisData(aisData: List<AisPayload>, outputFolder: File) {
-
-        val gpxHeader = """
+    fun createGpxFileFromAisData(
+        aisData: List<AisPayload>,
+        outputFolder: File,
+    ) {
+        val gpxHeader =
+            """
             <?xml version="1.0" encoding="UTF-8"?>
             <gpx version="1.1" creator="AIS-to-GPX Converter" xmlns="http://www.topografix.com/GPX/1/1">
-        """.trimIndent()
+            """.trimIndent()
 
         val gpxFooter = "</gpx>"
 
@@ -17,24 +20,25 @@ object GpxFormatter {
         val groupedData = aisData.groupBy { it.boatId }
 
         groupedData.forEach { (boatId, points) ->
-            val tracks = """
-            <trk>
-                <name>Boat $boatId</name>
-                <trkseg>
-                    ${points.sortedBy { it.timestamp }.joinToString("\n") { point ->
+            val tracks =
+                """
+                <trk>
+                    <name>Boat $boatId</name>
+                    <trkseg>
+                        ${points.sortedBy { it.timestamp }.joinToString("\n") { point ->
                     """
-                        <trkpt lat="${point.latitude}" lon="${point.longitude}">
-                            <ele>0</ele>
-                            <time>${point.timestamp}</time>
-                        </trkpt>
-                        """.trimIndent()
+                    <trkpt lat="${point.latitude}" lon="${point.longitude}">
+                        <ele>0</ele>
+                        <time>${point.timestamp}</time>
+                    </trkpt>
+                    """.trimIndent()
                 }}
-                </trkseg>
-            </trk>
-            """.trimIndent()
+                    </trkseg>
+                </trk>
+                """.trimIndent()
 
             // Construct output file gpx
-            val outputGpx =  "$gpxHeader\n$tracks\n$gpxFooter"
+            val outputGpx = "$gpxHeader\n$tracks\n$gpxFooter"
 
             // Create file for boatID
             val file = File("${outputFolder.path}/$boatId.gpx")

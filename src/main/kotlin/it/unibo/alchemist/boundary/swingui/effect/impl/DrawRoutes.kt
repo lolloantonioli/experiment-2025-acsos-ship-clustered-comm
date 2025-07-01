@@ -9,21 +9,28 @@ import it.unibo.alchemist.model.maps.maps.environments.NavigationEnvironment
 import java.awt.Color
 import java.awt.Graphics2D
 
+/**
+ * Graphical representation of navigation routes stored in the GeoJSON file.
+ * Routes are represented as lines in a bidimensional canvas.
+ *
+ * The object is deprecated because Alchemist deprecated its Swing GUI package,
+ * however, no alternative is available to date, so this customization inherits deprecation.
+ */
 @Suppress("DEPRECATION")
-class DrawRoutes: AbstractDrawOnce()  {
+class DrawRoutes : AbstractDrawOnce() {
     override fun getColorSummary(): Color = Color.MAGENTA
 
     override fun <T : Any?, P : Position2D<P>> draw(
         graphics2D: Graphics2D,
         node: Node<T>,
         environment: Environment<T, P>,
-        wormhole: Wormhole2D<P>
+        wormhole: Wormhole2D<P>,
     ) {
         DrawGeoJSONInformation.draw(
             (environment as NavigationEnvironment<T>).getGeoJsonObjectsForRoutes(),
             colorSummary,
             graphics2D,
-            wormhole as Wormhole2D<GeoPosition>
+            wormhole as Wormhole2D<GeoPosition>,
         )
     }
 }

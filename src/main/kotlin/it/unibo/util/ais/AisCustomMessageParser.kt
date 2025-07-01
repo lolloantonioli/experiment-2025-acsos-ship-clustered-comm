@@ -14,11 +14,15 @@ import dk.dma.ais.sentence.Vdm
  * This builder is more flexible than the library one because it allows to parse messages with any subdivisions,
  * without considering the whole stream of messages incoming.
  */
-class AisCustomMessageParser() {
+class AisCustomMessageParser {
     var vdm = Vdm()
+
+    /** Creates a new instance of the AIS sentence reader. **/
     fun reset() {
         vdm = Vdm()
     }
+
+    /** Parses a line of a raw message into an AIS sentence. **/
     fun parseLine(message: String) {
         try {
             vdm.parse(message)
@@ -26,10 +30,10 @@ class AisCustomMessageParser() {
             if (e.message != null && e.message!!.contains("Out of sequence sentence:")) {
                 // Failure due to previously interrupted message
                 // The sequence is dropped. Not the optimal solution but a easy workaround.
-                //println("Out of sequence sentence for $message: IGNORED")
+                // println("Out of sequence sentence for $message: IGNORED")
                 reset()
-                //vdm.parse(message)
-            } else if (e.message != null && e.message!!.contains("Invalid checksum")){
+                // vdm.parse(message)
+            } else if (e.message != null && e.message!!.contains("Invalid checksum")) {
                 println("Invalid checksum for $message: IGNORED")
                 reset()
             } else {
@@ -38,21 +42,24 @@ class AisCustomMessageParser() {
             }
         }
     }
+
+    /** @return true if the AIS sentence is complete. **/
     fun isComplete() = vdm.isCompletePacket
+
+    /** @return the [AisMessage] from the read sentence. **/
     fun build(): AisMessage? {
         try {
             return AisMessage.getInstance(vdm)
         } catch (e: Exception) {
-            if (e.message == "Unknown AIS message id 0"){
+            if (e.message == "Unknown AIS message id 0") {
                 // Empty payload: Ignoring message.
                 // println("Non valid NMEA AIS message on line ${vdm.encoded}: IGNORING THE MESSAGE")
                 return null
             } else {
                 println("Message not valid ${vdm.rawSentencesJoined}: IGNORED")
-                //throw(e)
+                // throw(e)
                 return null
             }
-
         } finally {
             reset()
         }

@@ -10,11 +10,14 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class TestAisParser {
-
-    val dataToParse = File(
-        object {}.javaClass.classLoader.getResource("ais-sample/20250506-130000.nmea.txt")?.toURI()
-            ?: throw IllegalArgumentException("Missing sample file in project resources")
-    )
+    val dataToParse =
+        File(
+            object {}
+                .javaClass.classLoader
+                .getResource("ais-sample/20250506-130000.nmea.txt")
+                ?.toURI()
+                ?: throw IllegalArgumentException("Missing sample file in project resources"),
+        )
 
     @Test
     fun testParseFile() {
@@ -33,7 +36,7 @@ class TestAisParser {
     }
 
     @Test
-    fun testDeriveNumberOfBoats(){
+    fun testDeriveNumberOfBoats() {
         val aisMessage = AisDecoder.parseFile(dataToParse)
         assertTrue(aisMessage.isNotEmpty())
         val aisPayloads = AisPayload.Companion.from(aisMessage)
@@ -63,7 +66,7 @@ class TestAisParser {
         println(output)
         assertEquals(
             "[msgId=1, repeat=0, userId=316013198, cog=2379, navStatus=0, pos=(32592666,190245714) = (32592666,-78189742), posAcc=1, raim=1, specialManIndicator=0, rot=128, sog=0, spare=0, syncState=0, trueHeading=511, utcSec=16, slotTimeout=5, subMessage=15]",
-            output.toString()
+            output.toString(),
         )
     }
 }

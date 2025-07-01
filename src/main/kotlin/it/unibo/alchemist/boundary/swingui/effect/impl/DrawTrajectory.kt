@@ -3,20 +3,20 @@ package it.unibo.alchemist.boundary.swingui.effect.impl
 import it.unibo.alchemist.boundary.swingui.effect.api.Effect
 import it.unibo.alchemist.boundary.ui.api.Wormhole2D
 import it.unibo.alchemist.model.Environment
-import it.unibo.alchemist.model.GeoPosition
 import it.unibo.alchemist.model.Node
 import it.unibo.alchemist.model.Position2D
-import it.unibo.alchemist.model.molecules.SimpleMolecule
-import it.unibo.util.geojson.toLatLongPosition
-import java.awt.*
-import java.awt.geom.AffineTransform
-import java.awt.geom.Line2D
-import kotlin.math.max
-import kotlin.math.min
+import java.awt.Color
+import java.awt.Graphics2D
+import java.awt.Point
 
+/**
+ * Graphical effect to highlight the trajectory performed by ships in the simulated environment.
+ *
+ * The object is deprecated because Alchemist deprecated its Swing GUI package,
+ * however, no alternative is available to date, so this customization inherits deprecation.
+ */
 @Suppress("DEPRECATION")
-class DrawTrajectory: Effect {
-
+class DrawTrajectory : Effect {
     @Transient
     private var positionsMemory: Map<Int, List<Point>> = mapOf()
 
@@ -72,25 +72,30 @@ class DrawTrajectory: Effect {
         }
     }
 
-
-    private fun computeColorOrBlack(
-        node: Node<*>,
-    ): Color =
+    private fun computeColorOrBlack(node: Node<*>): Color =
         node
             .id
             .toFloat()
             .let {
-                val hue = (it % MAX_COLOR) * 360f / MAX_COLOR  // Convert to hue (0-360 degrees)
+                val hue = (it % MAX_COLOR) * 360f / MAX_COLOR // Convert to hue (0-360 degrees)
                 return Color.getHSBColor(hue.toFloat(), 1f, 1f) // Full saturation and brightness
             }
 
+    /** Static utilities for drawing the trajectory. **/
     companion object {
+        /**
+         * Maximum value for color gradient.
+         */
         private const val MAX_COLOR: Double = 255.0
+
+        /**
+         * Length of the represented trajectory in the graphical interface.
+         */
         private const val DEFAULT_SNAPSHOT_LENGTH: Int = 140
-        private const val ADJUST_ALPHA_FACTOR: Int = 4
-        private const val DEFAULT_NODE_SIZE: Double = 1.0
+
+        /**
+         * Memory length of past positions.
+         */
         private const val DEFAULT_TIMESPAN: Int = 100
-
-
     }
 }
