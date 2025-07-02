@@ -5,6 +5,7 @@ import it.unibo.alchemist.model.Actionable
 import it.unibo.alchemist.model.Environment
 import it.unibo.alchemist.model.Node
 import it.unibo.alchemist.model.Time
+import it.unibo.clustered.seaborn.comm.Metric.megaBitsPerSecond
 import it.unibo.util.interClusterDR
 import it.unibo.util.intraClusterDR
 import it.unibo.util.leader
@@ -39,6 +40,9 @@ class ReductionFactor
             step: Long,
         ): Map<Node<T>, Double> = clusterRatios(environment)
 
+        /**
+         * Static utilities to compute the Reduction Factor.
+         */
         companion object {
             /**
              * Computes the ratio: sum(intra-cluster-data-rate)/sum(inter-cluster-data-rate).
@@ -67,7 +71,7 @@ class ReductionFactor
                                             .map { it.getConcentration(intraClusterDR) }
                                             .map { it.toDouble() } // kbps
                                             .filter { it.isFinite() }
-                                            .map { it.coerceAtMost(3000.0) } // 3mbit
+                                            .map { it.coerceAtMost(3.megaBitsPerSecond.kiloBitsPerSecond) }
                                             .sum()
                                     val maxInterCluster = leader.getConcentration(interClusterDR).toDouble()
                                     minOf(maxInterCluster / optimalTransmission, 1.0)

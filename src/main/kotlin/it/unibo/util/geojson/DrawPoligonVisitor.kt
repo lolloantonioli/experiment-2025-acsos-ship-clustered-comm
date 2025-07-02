@@ -1,10 +1,25 @@
 package it.unibo.util.geojson
 
-import io.data2viz.geojson.jackson.*
+import io.data2viz.geojson.jackson.Feature
+import io.data2viz.geojson.jackson.FeatureCollection
+import io.data2viz.geojson.jackson.GeoJsonObjectVisitor
+import io.data2viz.geojson.jackson.GeometryCollection
+import io.data2viz.geojson.jackson.LineString
+import io.data2viz.geojson.jackson.MultiLineString
+import io.data2viz.geojson.jackson.MultiPoint
+import io.data2viz.geojson.jackson.MultiPolygon
+import io.data2viz.geojson.jackson.Point
+import io.data2viz.geojson.jackson.Polygon
 import it.unibo.alchemist.boundary.ui.api.Wormhole2D
 import it.unibo.alchemist.model.GeoPosition
 import java.awt.Graphics2D
 
+/**
+ * Recursively visits a GeoJSON object to draw a poligon with the information contained inside of it.
+ * The poligon is drawn in a bidimensional canvas.
+ * @param graphics2D
+ * @param wormhole2D
+ */
 class DrawPoligonVisitor(
     val graphics2D: Graphics2D,
     val wormhole2D: Wormhole2D<GeoPosition>,

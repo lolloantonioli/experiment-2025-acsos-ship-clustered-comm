@@ -11,7 +11,7 @@ import kotlin.String
 import kotlin.collections.List
 
 /**
- * Reduction factor := sum(intra-cluster-data-rate)/sum(inter-cluster-data-rate)
+ * Reduction factor := sum(intra-cluster-data-rate)/sum(inter-cluster-data-rate).
  *
  */
 class ClusterSize
@@ -44,10 +44,20 @@ class ClusterSize
             return clusters.mapValues { it.value.size.toDouble() }
         }
 
+        /**
+         * Alchemist Molecules used to gather information from nodes.
+         */
         companion object {
+            /** Holds the information is a node is a shore station or not. **/
             val station = SimpleMolecule("station")
+
+            /** Holds the CSC leader id for the node. **/
             val leader = SimpleMolecule("myLeader")
+
+            /** Holds the CSC intra-cluster data rate. **/
             val intraClusterDR = SimpleMolecule("export-intra-cluster-relay-data-rate-not-leader")
+
+            /** Holds the CSC inter-cluster data rate. **/
             val interClusterDR = SimpleMolecule("leader-to-relay-data-rate")
         }
     }

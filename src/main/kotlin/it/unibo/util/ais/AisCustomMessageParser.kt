@@ -1,6 +1,8 @@
 package it.unibo.util.ais
 
+import dk.dma.ais.binary.SixbitException
 import dk.dma.ais.message.AisMessage
+import dk.dma.ais.message.AisMessageException
 import dk.dma.ais.sentence.SentenceException
 import dk.dma.ais.sentence.Vdm
 
@@ -15,7 +17,7 @@ import dk.dma.ais.sentence.Vdm
  * without considering the whole stream of messages incoming.
  */
 class AisCustomMessageParser {
-    var vdm = Vdm()
+    private var vdm = Vdm()
 
     /** Creates a new instance of the AIS sentence reader. **/
     fun reset() {
@@ -46,20 +48,26 @@ class AisCustomMessageParser {
     /** @return true if the AIS sentence is complete. **/
     fun isComplete() = vdm.isCompletePacket
 
+    private fun failureMessage(e: Exception) {
+        if (e.message == "Unknown AIS message id 0") {
+            // Empty payload: Ignoring message.
+            // println("Non valid NMEA AIS message on line ${vdm.encoded}: IGNORING THE MESSAGE")
+        } else {
+            println("Message not valid ${vdm.rawSentencesJoined}: IGNORED")
+            // throw(e)
+        }
+    }
+
     /** @return the [AisMessage] from the read sentence. **/
     fun build(): AisMessage? {
         try {
             return AisMessage.getInstance(vdm)
-        } catch (e: Exception) {
-            if (e.message == "Unknown AIS message id 0") {
-                // Empty payload: Ignoring message.
-                // println("Non valid NMEA AIS message on line ${vdm.encoded}: IGNORING THE MESSAGE")
-                return null
-            } else {
-                println("Message not valid ${vdm.rawSentencesJoined}: IGNORED")
-                // throw(e)
-                return null
-            }
+        } catch (e: AisMessageException) {
+            failureMessage(e)
+            return null
+        } catch (e: SixbitException) {
+            failureMessage(e)
+            return null
         } finally {
             reset()
         }

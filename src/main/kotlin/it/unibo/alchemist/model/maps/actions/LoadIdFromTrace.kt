@@ -10,8 +10,11 @@ import it.unibo.alchemist.model.molecules.SimpleMolecule
 import java.io.File
 
 /**
- * Loads the Id of the boat from the GPX trace
+ * Loads the Id of the boat from the GPX trace.
  * @param <T> Concentration type
+ * @param environment the Alchemist environment instance.
+ * @param node the Alchemist node instance.
+ * @param path the path of the GPX file.
  */
 class LoadIdFromTrace<T>(
     val environment: NavigationEnvironment<T>,

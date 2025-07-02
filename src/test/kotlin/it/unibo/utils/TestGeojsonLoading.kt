@@ -36,7 +36,7 @@ class TestGeojsonLoading {
                 .findAndRegisterModules()
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
         val geojsonObject = customMapper.readValue(geojsonFile, JacksonGeoJsonObject::class.java)
-
+        assert(geojsonObject != null)
         nonNavigablePoints.forEach {
             assertFalse {
                 geojsonObject.accept(IsNavigableVisitor(it))

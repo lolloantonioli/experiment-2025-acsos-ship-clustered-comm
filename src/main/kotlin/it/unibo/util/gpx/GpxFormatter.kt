@@ -3,7 +3,12 @@ package it.unibo.util.gpx
 import it.unibo.util.ais.AisPayload
 import java.io.File
 
+/** Utility to generate GPX files from AIS Payload. **/
 object GpxFormatter {
+    /**
+     * @param aisData the list of [AisPayload] that will be converted into GPX traces.
+     * @param outputFolder the folder in which GPX traces will be stored.
+     */
     fun createGpxFileFromAisData(
         aisData: List<AisPayload>,
         outputFolder: File,

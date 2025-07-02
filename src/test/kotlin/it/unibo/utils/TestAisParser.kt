@@ -65,7 +65,10 @@ class TestAisParser {
         val output = customMessageParser.build()
         println(output)
         assertEquals(
-            "[msgId=1, repeat=0, userId=316013198, cog=2379, navStatus=0, pos=(32592666,190245714) = (32592666,-78189742), posAcc=1, raim=1, specialManIndicator=0, rot=128, sog=0, spare=0, syncState=0, trueHeading=511, utcSec=16, slotTimeout=5, subMessage=15]",
+            "[msgId=1, repeat=0, userId=316013198, cog=2379, navStatus=0, " +
+                "pos=(32592666,190245714) = (32592666,-78189742), posAcc=1, raim=1, " +
+                "specialManIndicator=0, rot=128, sog=0, spare=0, syncState=0, " +
+                "trueHeading=511, utcSec=16, slotTimeout=5, subMessage=15]",
             output.toString(),
         )
     }

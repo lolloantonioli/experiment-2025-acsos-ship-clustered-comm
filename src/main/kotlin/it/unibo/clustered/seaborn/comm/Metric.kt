@@ -3,6 +3,7 @@ package it.unibo.clustered.seaborn.comm
 import it.unibo.clustered.seaborn.comm.Metric.disconnected
 import it.unibo.clustered.seaborn.comm.Metric.kiloBitsPerSecond
 import java.io.File
+import java.util.Locale
 import kotlin.Double.Companion.POSITIVE_INFINITY
 import kotlin.math.exp
 import kotlin.math.ln
@@ -90,8 +91,17 @@ fun interpolateLogLinear(data: Map<Distance, DataRate>): (Distance) -> DataRate 
  * Converts a [Distance] into a [DataRate].
  */
 fun interface ConnectionTechnology {
+    /**
+     * Function that given a distance from the source returns the corresponding data rate,
+     * which value depends on the communication technology used.
+     * @param distance the [Distance] from the source.
+     * @return the corresponding [DataRate] value.
+     */
     operator fun invoke(distance: Distance): DataRate
 
+    /**
+     * Static factory for [ConnectionTechnology].
+     */
     companion object {
         /** Creates a [ConnectionTechnology] by interpolating the missing points. **/
         fun byInterpolation(
@@ -126,6 +136,7 @@ value class Distance(
             else -> "${meters.readable}m"
         }
 
+    /** Computes the sum of two [Distance]. **/
     operator fun plus(other: Distance): Distance = Distance(meters + other.meters)
 
     override fun compareTo(other: Distance): Int = meters.compareTo(other.meters)
@@ -144,7 +155,7 @@ val Int.meters get() = toDouble().meters
 val Int.kilometers get() = toDouble().kilometers
 
 /** Formatted [String] of a [Double]. **/
-val Double.readable get() = String.format("%.3f", this)
+val Double.readable get() = String.format(Locale.ENGLISH, "%.3f", this)
 
 /** Data rate representation in kbps.
  * @param kiloBitsPerSecond the kilobits of the data rate.
@@ -194,6 +205,12 @@ value class DataRate(
 
 /** Metric functions used in the simulation for the communication means involved. **/
 object Metric {
+    /** Used for conversions of bps. **/
+    const val ONE_MILLION = 1e6
+
+    /** Used for conversions of bps. **/
+    const val ONE_THOUSANDSTH = 1e-3
+
     /** Disconnected data rate == 0.0. **/
     val disconnected = DataRate(0.0)
 
@@ -207,10 +224,10 @@ object Metric {
     val Double.megaBitsPerSecond get() = DataRate(this * 1e3)
 
     /** Conversion from [Double] Gbps into [DataRate]. **/
-    val Double.gigaBitsPerSecond get() = DataRate(this * 1e6)
+    val Double.gigaBitsPerSecond get() = DataRate(this * ONE_MILLION)
 
     /** Conversion from [Int] bps into [DataRate]. **/
-    val Int.bitsPerSecond get() = DataRate(this * 1e-3)
+    val Int.bitsPerSecond get() = DataRate(this * ONE_THOUSANDSTH)
 
     /** Conversion from [Int] Kbps into [DataRate]. **/
     val Int.kiloBitsPerSecond get() = toDouble().kiloBitsPerSecond
@@ -287,19 +304,22 @@ object Metric {
             ),
         )
 
+    /** Upper bound for creating csv interpolation file. **/
+    const val UPPER_BOUND = 60000
+
     /** Utility function that exports the Communication technologies into a csv file to generate charts out of it. **/
     fun exportMetricInCsv(fileName: String = "data/metric_data.csv") {
         val file = File(fileName)
         file.printWriter().use { out ->
             out.println("x,y_wifi,y_aprs,y_lora,y_midband5g")
-            for (i in 1 until 60000) {
+            for (i in 1 until UPPER_BOUND) {
                 out.println(
                     listOf(
                         i.meters.meters,
-                        Metric.wifi.invoke(i.meters).megaBitsPerSecond,
-                        Metric.aprs.invoke(i.meters).megaBitsPerSecond,
-                        Metric.lora.invoke(i.meters).megaBitsPerSecond,
-                        Metric.midband5G.invoke(i.meters).megaBitsPerSecond,
+                        wifi.invoke(i.meters).megaBitsPerSecond,
+                        aprs.invoke(i.meters).megaBitsPerSecond,
+                        lora.invoke(i.meters).megaBitsPerSecond,
+                        midband5G.invoke(i.meters).megaBitsPerSecond,
                     ).joinToString(","),
                 )
             }

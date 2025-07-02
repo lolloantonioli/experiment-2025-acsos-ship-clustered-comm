@@ -4,10 +4,9 @@ import dk.dma.ais.message.AisMessage
 import java.io.File
 import java.time.Instant
 
-/** Utility object to decode AIS raw messages **/
+/** Utility object to decode AIS raw messages. **/
 object AisDecoder {
-    /** @return the message parsed from a raw [String] to [AisMessage] and maps it to
-     * the timestamp of the raw message.
+    /** @return the message parsed from a raw [String] to [AisMessage] and maps it to the timestamp of the raw message.
      **/
     fun parsePayload(
         payload: String,

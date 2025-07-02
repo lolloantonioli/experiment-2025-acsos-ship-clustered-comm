@@ -34,6 +34,11 @@ private fun <ID> RelayInfo<ID>.relayId(): ID = first
 
 private val RelayInfo<*>.distanceToLeader: Double get() = second
 
+/** Inject the information inside Alchemist's simulation node, for future retrieval.
+ * @param T the value to inject
+ * @param environment the alchemist environment
+ * @param name the name of the molecule on which inject the value.
+ **/
 fun <T> T.inject(
     environment: CollektiveDevice<*>,
     name: String,
@@ -42,6 +47,7 @@ fun <T> T.inject(
     environment["export-$name"] = this.toDouble()
 }
 
+/** Aggregate algorithm executed on each node. **/
 fun Aggregate<Int>.entrypoint(environment: CollektiveDevice<*>): Any? {
     // Streaming data rate
     val payloadSize = environment.get<Double>("payloadSize")
@@ -90,7 +96,14 @@ fun Aggregate<Int>.entrypoint(environment: CollektiveDevice<*>): Any? {
                 }.first
                 .inject(environment, "baseline2-parent")
         dataRates[baseline2Parent].inject(environment, "baseline2-parent-data-rate")
-        computeNonCooperativeDataRate("baseline2", streamingBitRate, environment, baseline2Parent, stationsNearby, dataRates)
+        computeNonCooperativeDataRate(
+            "baseline2",
+            streamingBitRate,
+            environment,
+            baseline2Parent,
+            stationsNearby,
+            dataRates,
+        )
 
         // Baseline 3: min time to station
         val baseline3TimeToStation =
@@ -101,7 +114,11 @@ fun Aggregate<Int>.entrypoint(environment: CollektiveDevice<*>): Any? {
             ).inject(environment, "baseline3-timeToStation")
 
         val baseline3neighborTimes = neighboring(baseline3TimeToStation)
-        val baseline3TimeToStationThroughRelays = timeToTransmit.alignedMap(baseline3neighborTimes, Double::plus)
+        val baseline3TimeToStationThroughRelays =
+            timeToTransmit.alignedMap(
+                baseline3neighborTimes,
+                Double::plus,
+            )
         val baseline3Parent =
             baseline3TimeToStationThroughRelays
                 .foldWithId(localId to POSITIVE_INFINITY) { current, id, time ->
@@ -112,7 +129,14 @@ fun Aggregate<Int>.entrypoint(environment: CollektiveDevice<*>): Any? {
                 }.first
                 .inject(environment, "baseline3-parent")
         dataRates[baseline3Parent].inject(environment, "baseline3-parent-data-rate")
-        computeNonCooperativeDataRate("baseline3", streamingBitRate, environment, baseline3Parent, stationsNearby, dataRates)
+        computeNonCooperativeDataRate(
+            "baseline3",
+            streamingBitRate,
+            environment,
+            baseline3Parent,
+            stationsNearby,
+            dataRates,
+        )
 
         // Clustered
         val clusteredTimeToStation: Double =
@@ -129,16 +153,15 @@ fun Aggregate<Int>.entrypoint(environment: CollektiveDevice<*>): Any? {
                 bound = streamingBitRate.timeToTransmitOneMb,
                 metric = timeToTransmit,
                 selectBest = { c1, c2 ->
-                    maxOf(c1, c2, compareBy<Candidacy<Int, Double, Double>> { it.strength }.thenBy { it.candidate })
+                    maxOf(
+                        c1,
+                        c2,
+                        compareBy<Candidacy<Int, Double, Double>> { it.strength }.thenBy { it.candidate },
+                    )
                 },
             ).inject(environment, "myLeader")
         val imLeader = myLeader == localId
         imLeader.inject(environment, "imLeader")
-//        val distanceToLeader = distanceTo(
-//            imLeader,
-//            metric = timeToTransmit,
-//            isRiemannianManifold = false,
-//        ).inject(environment, "distanceToLeader")
         val distanceToLeader =
             alignedOn(myLeader) {
                 distanceTo(
@@ -159,15 +182,15 @@ fun Aggregate<Int>.entrypoint(environment: CollektiveDevice<*>): Any? {
                 .minBy(localId to POSITIVE_INFINITY) { it.second }
                 .first
                 .inject(environment, "intra-cluster-relay")
-        val intraClusterDataRate = dataRates[idOfIntraClusterRelay].inject(environment, "intra-cluster-relay-data-rate")
-        val intraClusterDataRateNoLeaders =
-            (
-                intraClusterDataRate.takeUnless {
-                    imLeader
-                } ?: Double.NaN
-            ).inject(environment, "intra-cluster-relay-data-rate-not-leader")
+        val intraClusterDataRate =
+            dataRates[idOfIntraClusterRelay]
+                .inject(environment, "intra-cluster-relay-data-rate")
+        (intraClusterDataRate.takeUnless { imLeader } ?: Double.NaN)
+            .inject(environment, "intra-cluster-relay-data-rate-not-leader")
 
-        val timesToStationAround = neighboring(clusteredTimeToStation).inject(environment, "timesToStationAround")
+        val timesToStationAround =
+            neighboring(clusteredTimeToStation)
+                .inject(environment, "timesToStationAround")
         val localTimeToStation = timesToStationAround.localValue
         val potentialRelays =
             neighboring(myLeader)
@@ -184,7 +207,7 @@ fun Aggregate<Int>.entrypoint(environment: CollektiveDevice<*>): Any? {
                 }.minWithId(localId to POSITIVE_INFINITY, compareBy { it.distanceToLeader })
                 .relayId()
                 .inject(environment, "myRelay")
-        val imRelay = neighboring(myRelay).map { it == localId }.any(false).inject(environment, "imRelay")
+        neighboring(myRelay).map { it == localId }.any(false).inject(environment, "imRelay")
         val upstreamToRelay = dataRates[myRelay]
         val iHaveARelay = imLeader && myRelay != localId
         environment["leader-to-relay-data-rate"] =
@@ -192,16 +215,15 @@ fun Aggregate<Int>.entrypoint(environment: CollektiveDevice<*>): Any? {
                 iHaveARelay -> upstreamToRelay.kiloBitsPerSecond
                 else -> Double.NaN
             }
-        // Exported info
-        // val myLeaderMolecule = SimpleMolecule("myLeader")
-        // environment.environment.nodes.count { it.contents[myLeaderMolecule] == myLeader }.inject(environment, "cluster-size")
-
         return timeToTransmit[myRelay]
     }
 
     return Unit
 }
 
+/**
+ * Computes the data rate of the node towards the station without optimizing transmission.
+ */
 fun Aggregate<Int>.computeNonCooperativeDataRate(
     experimentName: String,
     streamingBitRate: DataRate,
@@ -240,6 +262,7 @@ fun Aggregate<Int>.computeNonCooperativeDataRate(
     }.localValue.inject(environment, "$experimentName-data-rate")
 }
 
+/** Computes data rate for the node towards its neighbors. **/
 fun Aggregate<Int>.computeDataRates(
     environment: CollektiveDevice<*>,
     distances: Field<Int, Distance>,
@@ -286,12 +309,7 @@ fun Aggregate<Int>.computeDataRates(
         }.inject("dataRates")
 }
 
-fun Double.max3Mbit(): Double = coerceAtMost(3000.0)
-
-fun DataRate.max3Mbit(): Double = kiloBitsPerSecond.coerceAtMost(3000.0)
-
-fun main() {
-    (0..50)
-        .map { it.kilometers to "APRS: ${aprs(it.kilometers)}, LoRa: ${lora(it.kilometers)}" }
-        .forEach(::println)
-}
+/** Applies an upper-bound of 3Mbps to this [DataRate].
+ * @return at most 3Mbps.
+ **/
+fun DataRate.max3Mbit(): Double = kiloBitsPerSecond.coerceAtMost(3.megaBitsPerSecond.kiloBitsPerSecond)

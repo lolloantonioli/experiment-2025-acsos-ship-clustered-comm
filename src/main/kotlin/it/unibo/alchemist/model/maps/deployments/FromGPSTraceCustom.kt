@@ -17,10 +17,17 @@ import java.util.stream.StreamSupport
 
 /**
  * Distributes nodes in the first positions of [GPSTrace].
+ * @param traces the [TraceLoader] instance.
  */
 class FromGPSTraceCustom(
     private val traces: TraceLoader,
 ) : Deployment<GeoPosition> {
+    /**
+     * Creates a [FromGPSTraceCustom] instance.
+     * @param path the [String] path where the GPX traces can be load from.
+     * @param normalizer
+     * @param normalizerArgs
+     */
     constructor(path: String, normalizer: String, vararg normalizerArgs: Any) : this(
         TraceLoader(path, false, normalizer, *normalizerArgs),
     )

@@ -3,6 +3,7 @@ package it.unibo.util
 import it.unibo.clustered.seaborn.comm.DataRate
 import it.unibo.clustered.seaborn.comm.Distance
 
+/** Converts an [Any] into a [Double], where possible. **/
 fun Any?.toDouble(): Double =
     when (this) {
         is Double -> this
@@ -13,6 +14,7 @@ fun Any?.toDouble(): Double =
         else -> Double.NaN
     }
 
+/** Converts an [Any] into a [Int], where possible. **/
 fun Any?.toInt(): Int =
     when (this) {
         is Number -> this.toInt()
@@ -22,6 +24,7 @@ fun Any?.toInt(): Int =
         else -> 0
     }
 
+/** Converts an [Any] into a [Boolean], where possible. **/
 fun Any?.toBoolean(): Boolean =
     when (this) {
         is Boolean -> this

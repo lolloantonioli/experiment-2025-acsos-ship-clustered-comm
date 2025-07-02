@@ -2,6 +2,7 @@ package it.unibo.alchemist.boundary.extractors
 
 import it.unibo.alchemist.model.Actionable
 import it.unibo.alchemist.model.Environment
+import it.unibo.alchemist.model.Molecule
 import it.unibo.alchemist.model.Time
 import it.unibo.alchemist.model.molecules.SimpleMolecule
 
@@ -20,17 +21,10 @@ class NumberOfClusters(
         mapOf(
             columnNames.first() to
                 environment.nodes
-                    .map { it.contents[myLeader] }
+                    .map { it.contents[Utils.myLeader] }
                     .toSet()
                     .count()
                     .toDouble(),
         )
 
-    companion object {
-        /**
-         * Gathers the leader of the node.
-         * This information is stored in each node in the simulation as "myLeader".
-         */
-        val myLeader = SimpleMolecule("myLeader")
-    }
 }

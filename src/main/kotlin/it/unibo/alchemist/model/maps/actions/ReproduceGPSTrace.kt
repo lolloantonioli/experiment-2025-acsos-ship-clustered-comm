@@ -8,7 +8,11 @@
  */
 package it.unibo.alchemist.model.maps.actions
 
-import it.unibo.alchemist.model.*
+import it.unibo.alchemist.model.GeoPosition
+import it.unibo.alchemist.model.Node
+import it.unibo.alchemist.model.Reaction
+import it.unibo.alchemist.model.RoutingService
+import it.unibo.alchemist.model.RoutingServiceOptions
 import it.unibo.alchemist.model.maps.MapEnvironment
 import it.unibo.alchemist.model.maps.movestrategies.routing.IgnoreStreets
 import it.unibo.alchemist.model.maps.movestrategies.speed.StraightLineTraceDependantSpeed
@@ -20,7 +24,10 @@ import it.unibo.alchemist.model.movestrategies.speed.ConstantSpeed
  * @param <O> [RoutingServiceOptions] type
  * @param <S> [RoutingService] type
 </S></O></T> */
-class ReproduceGPSTrace<T, O : RoutingServiceOptions<O>, S : RoutingService<GeoPosition, O>> : MoveOnMapWithGPS<T, O, S> {
+class ReproduceGPSTrace<T, O, S> :
+    MoveOnMapWithGPS<T, O, S> where
+          O : RoutingServiceOptions<O>,
+          S : RoutingService<GeoPosition, O> {
     /**
      * @param environment
      * the environment

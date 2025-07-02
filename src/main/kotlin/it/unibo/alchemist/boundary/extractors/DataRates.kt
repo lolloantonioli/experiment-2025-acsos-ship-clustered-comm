@@ -6,6 +6,7 @@ import it.unibo.alchemist.model.Environment
 import it.unibo.alchemist.model.Molecule
 import it.unibo.alchemist.model.Node
 import it.unibo.alchemist.model.Time
+import it.unibo.clustered.seaborn.comm.Metric.megaBitsPerSecond
 import it.unibo.util.baseline1DR
 import it.unibo.util.baseline2DataRates
 import it.unibo.util.baseline2Parent
@@ -80,7 +81,7 @@ class DataRates(
                 Mode.CSC -> {
                     val reductionFactors = getRatios(environment, step)
                     val leader = environment.getNodeByID(subject.getConcentration(leader).toInt())
-                    clusteringDataRate(environment, reductionFactors, leader, 3000.0)
+                    clusteringDataRate(environment, reductionFactors, leader, 3.megaBitsPerSecond.kiloBitsPerSecond)
                 }
             }
         }
@@ -94,8 +95,8 @@ class DataRates(
         visited: Set<Int> = emptySet(),
     ): Double =
         when {
-            subject.getConcentration(station).toBoolean() -> 3000.0
-            subject.getConcentration(dataRate).toDouble() >= 3000 -> {
+            subject.getConcentration(station).toBoolean() -> 3.megaBitsPerSecond.kiloBitsPerSecond
+            subject.getConcentration(dataRate).toDouble() >= 3.megaBitsPerSecond.kiloBitsPerSecond -> {
                 val next = subject.getConcentration(leader).toInt()
                 when {
                     next in visited -> 0.0
@@ -174,6 +175,9 @@ enum class Mode {
 
     ;
 
+    /**
+     * Static Factory of [Mode] enum.
+     */
     companion object {
         /**
          * Converts a [String] in a [Mode] enumeration, when possible.

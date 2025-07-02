@@ -7,7 +7,15 @@ import java.io.File
 import java.time.Instant
 import java.util.regex.Pattern
 
+/**
+ * Utility Script that parses the raw AIS data (not provided for privacy in this repository).
+ */
 object ParseRawNavigationData {
+    /**
+     * @param inputFolder the folder containing AIS raw messages.
+     * @param day the name of the file used to filter raw messages to parse.
+     * @return a list of [File].
+     */
     fun dataToParse(
         inputFolder: String,
         day: String,
@@ -19,6 +27,13 @@ object ParseRawNavigationData {
                 throw IllegalStateException("No suitable file found")
             }.toList()
 
+    /**
+     * Parses all the files contained inside inputFolder into [AisPayload] and then stores them in outputFolder as
+     * GPX traces.
+     * @param inputFolder the path of the input folder with raw data.
+     * @param outputFolder the path of the output folder where to put parsed info.
+     * @param day the file name used to filter raw files inside inputFolder.
+     */
     fun parse(
         inputFolder: String,
         outputFolder: String,
@@ -32,13 +47,17 @@ object ParseRawNavigationData {
         val aisPayloads =
             AisPayload
                 .from(aisMessages)
-                .filterNot { it.boatId == 235818393 } // This boat is located in Russia somehow. Deleting from dataset.
+                .filterNot { it.boatId == ID_TO_DELETE }
         println("Writing to: $outputFolder")
         val destinationFolder = File(outputFolder)
         destinationFolder.mkdirs()
         GpxFormatter.createGpxFileFromAisData(aisPayloads, destinationFolder)
     }
 
+    /** This boat is located in Russia somehow. Deleting from dataset.**/
+    const val ID_TO_DELETE = 235818393
+
+    /** Kotlin script to generate GPX traces from AIS raw files. **/
     @JvmStatic
     fun main(vararg args: String) {
         val inputFolder = args[0]

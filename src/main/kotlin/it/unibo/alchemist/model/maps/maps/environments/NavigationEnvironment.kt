@@ -15,11 +15,22 @@ import it.unibo.util.geojson.IsNavigableVisitor
 import it.unibo.util.geojson.toLngLatAlt
 import java.io.File
 
+/**
+ * Features of the Alchemist Simulator to hold navigation information from GeoJSON files.
+ * @param incarnation
+ * @param shorelineFiles a [List] of GeoJSON files containing shoreline description.
+ * @param routesFiles a [List] of GeoJSON files containing the navigation routes description.
+ */
 class NavigationEnvironment<T>(
     incarnation: Incarnation<T, GeoPosition>,
     shorelineFiles: List<String>,
     routesFiles: List<String>,
 ) : MapEnvironment<T, GraphHopperOptions, GraphHopperRoutingService> by OSMEnvironment(incarnation) {
+    /**
+     * Creates an instance of [NavigationEnvironment].
+     * @param incarnation
+     * @param shorelineFiles a [List] of GeoJSON files containing shoreline description.
+     */
     constructor(incarnation: Incarnation<T, GeoPosition>, shorelineFiles: List<String>) :
         this(incarnation, shorelineFiles, emptyList())
 
@@ -33,9 +44,7 @@ class NavigationEnvironment<T>(
                 .getResource(path)
                 ?.toURI()
                 ?.let { File(it) }
-        if (file == null) {
-            throw IllegalArgumentException("Nor resource $path exist")
-        }
+        require(file != null) { "No resource $path exist" }
 
         val fileExtension = file.path.split(".")[1]
         if (fileExtension != "geojson") {
@@ -51,21 +60,35 @@ class NavigationEnvironment<T>(
         return customMapper.readValue(file, JacksonGeoJsonObject::class.java)
     }
 
+    /**
+     * @param position the [GeoPosition] of the boat in the simulation environment.
+     * @return true if the position is not inside the polygon of the shore land, otherwise false.
+     */
     fun isPositionNavigable(position: GeoPosition): Boolean =
         when (position) {
             is LatLongPosition -> isPositionNavigable(position)
             else -> error("Not yet implemented!")
         }
 
+    /** @return a list of [JacksonGeoJsonObject] parsed from provided files containing routes info. **/
     fun getGeoJsonObjectsForRoutes(): List<JacksonGeoJsonObject> = geoJsonObjectsForRoutes
 
+    /** @return a list of [JacksonGeoJsonObject] parsed from provided files containing shoreline info. **/
     fun getGeoJsonObjectsForShoreline(): List<JacksonGeoJsonObject> = geoJsonObjectsForShoreline
 
+    /**
+     * @param position the [LatLongPosition] of the boat in the simulation environment.
+     * @return true if the position is not inside the polygon of the shore land, otherwise false.
+     */
     fun isPositionNavigable(position: LatLongPosition): Boolean =
-        geoJsonObjectsForShoreline.all { it.accept(IsNavigableVisitor(position.toLngLatAlt())) }
+        geoJsonObjectsForShoreline.all {
+            it.accept(IsNavigableVisitor(position.toLngLatAlt()))
+        }
 
     override fun makePosition(vararg coordinates: Number): GeoPosition {
-        require(coordinates.size == 2) { javaClass.simpleName + " only supports bi-dimensional coordinates (latitude, longitude)" }
+        require(coordinates.size == 2) {
+            "${javaClass.simpleName} only supports bi-dimensional coordinates (latitude, longitude)"
+        }
         return LatLongPosition(coordinates[0].toDouble(), coordinates[1].toDouble())
     }
 

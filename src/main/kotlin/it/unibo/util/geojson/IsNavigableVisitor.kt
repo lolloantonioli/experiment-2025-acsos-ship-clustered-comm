@@ -1,7 +1,21 @@
 package it.unibo.util.geojson
 
-import io.data2viz.geojson.jackson.*
+import io.data2viz.geojson.jackson.Feature
+import io.data2viz.geojson.jackson.FeatureCollection
+import io.data2viz.geojson.jackson.GeoJsonObjectVisitor
+import io.data2viz.geojson.jackson.GeometryCollection
+import io.data2viz.geojson.jackson.LineString
+import io.data2viz.geojson.jackson.LngLatAlt
+import io.data2viz.geojson.jackson.MultiLineString
+import io.data2viz.geojson.jackson.MultiPoint
+import io.data2viz.geojson.jackson.MultiPolygon
+import io.data2viz.geojson.jackson.Point
+import io.data2viz.geojson.jackson.Polygon
 
+/**
+ * Visitor of a GeoJSON object that determines whether the target position is navigable or not.
+ * @param targetPosition the target position in.
+ */
 class IsNavigableVisitor(
     private val targetPosition: LngLatAlt,
 ) : GeoJsonObjectVisitor<Boolean> {

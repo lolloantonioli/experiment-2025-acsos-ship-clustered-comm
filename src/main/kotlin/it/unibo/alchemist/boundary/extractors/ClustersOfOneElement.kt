@@ -21,19 +21,11 @@ class ClustersOfOneElement(
             columnNames.first() to
                 environment.nodes
                     .map {
-                        it.contents[myLeader]
+                        it.contents[Utils.myLeader]
                     }.groupingBy { it }
                     .eachCount()
                     .filter { it.value == 1 }
                     .count()
                     .toDouble(),
         )
-
-    companion object {
-        /**
-         * Gathers the leader of the node.
-         * This information is stored in each node in the simulation as "myLeader".
-         */
-        val myLeader = SimpleMolecule("myLeader")
-    }
 }

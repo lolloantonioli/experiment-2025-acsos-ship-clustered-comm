@@ -7,7 +7,6 @@ import it.unibo.alchemist.model.Node
 import it.unibo.alchemist.model.Position2D
 import it.unibo.alchemist.model.molecules.SimpleMolecule
 import it.unibo.util.iAmLeader
-import it.unibo.util.iAmRelay
 import it.unibo.util.intraClusterRelay
 import it.unibo.util.leader
 import it.unibo.util.relay
@@ -48,7 +47,6 @@ class DrawNetwork : Effect {
         if (!isStation && !is5GAntenna) {
             val isMoleculeDefined = !node.getConcentration(leader).toDouble().isNaN()
             val imLeader = node.getConcentration(iAmLeader).toBoolean()
-            val imRelay = node.getConcentration(iAmRelay).toBoolean()
             val myLeader = node.getConcentration(leader).toInt()
             val myRelay = node.getConcentration(relay).toInt()
             val intraClusterRelay = node.getConcentration(intraClusterRelay).toInt()
