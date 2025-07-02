@@ -1,3 +1,17 @@
+## [1.1.0](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/compare/1.0.79...1.1.0) (2025-07-02)
+
+### Features
+
+* add documentation ([8245d2d](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/8245d2d2f2fbbc7a72afbc87e4bd987d0038fafc))
+* add kotlin documentation ([cae0e97](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/cae0e979e6c8a2c459d8905ca5fdfd3e16974ed0))
+* add LICENSE file ([faec230](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/faec230f4dd2d6f0faff53619ad23d597c96b5cb))
+
+### General maintenance
+
+* refactor of resource files ([c7cece8](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/c7cece82c1aea7bf677e18865820d647ea5f10d6))
+* **release:** update gradle.properties .env versions to 1.0.79 [skip ci] ([ba3959e](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/ba3959ed3479519e71fa8428fec5e9a7b88950f9))
+* remove autogit script ([6bfd211](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/6bfd211e273955ee3ce903c412ba0d60d8da4e44))
+
 ## [1.0.79](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/compare/1.0.78...1.0.79) (2025-06-30)
 
 ### Bug Fixes
