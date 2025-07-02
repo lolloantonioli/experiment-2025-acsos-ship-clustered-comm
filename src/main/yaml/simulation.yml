@@ -31,7 +31,7 @@ variables:
     parameters: [3, [0.001, 0.064, 0.1, 0.320, 3, 5]]
   seed: &seed
     min: 0
-    max: 3
+    max: 100
     step: 1
     default: 0
 

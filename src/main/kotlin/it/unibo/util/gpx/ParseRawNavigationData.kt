@@ -39,7 +39,6 @@ object ParseRawNavigationData {
         outputFolder: String,
         day: String,
     ) {
-        // Boat 235818393 to delete
         val aisMessages: MutableMap<Instant, AisMessage> = mutableMapOf()
         dataToParse(inputFolder, day).forEach {
             aisMessages.putAll(AisDecoder.parseFile(it))
@@ -54,7 +53,7 @@ object ParseRawNavigationData {
         GpxFormatter.createGpxFileFromAisData(aisPayloads, destinationFolder)
     }
 
-    /** This boat is located in Russia somehow. Deleting from dataset.**/
+    /** This boat is located in Russia somehow, probably an error in the data. Deleting it from dataset.**/
     const val ID_TO_DELETE = 235818393
 
     /** Kotlin script to generate GPX traces from AIS raw files. **/
