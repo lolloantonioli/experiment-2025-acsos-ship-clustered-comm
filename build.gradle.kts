@@ -181,12 +181,6 @@ File(rootProject.rootDir.path + "/src/main/yaml")
         runAllBatch.dependsOn(batch)
     }
 
-tasks.withType(KotlinCompile::class).all {
-    compilerOptions {
-        allWarningsAsErrors = false
-    }
-}
-
 tasks.withType<Test> {
     this.testLogging {
         this.showStandardStreams = true
