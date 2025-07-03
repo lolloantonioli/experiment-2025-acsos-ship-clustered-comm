@@ -1,16 +1,37 @@
-# Experiment for Robust Communication through Collective Adaptive Relay Schemes for Maritime Vessels
-### Companion artifact for paper submitted to [ACSOS 2025](https://conf.researchr.org/home/acsos-2025) main track
+# Robust Communication through Collective Adaptive Relay Schemes for Maritime Vessels
+#### Experiments for paper _"Robust Communication through Collective Adaptive Relay Schemes for Maritime Vessels"_ submitted to [ACSOS 2025](https://conf.researchr.org/home/acsos-2025) main track
+
+#### Authors
+
+**Martina Baiardi** (m.baiardi@unibo.it),
+**Danilo Pianini** (danilo.pianini@unibo.it)
+
+Department of Computer Science and Engineering
+Alma Mater Studiorum --- Università di Bologna - Cesena, Italy
+
+**Ghassan Al-Falouji** (gaf@informatik.uni-kiel.de),
+**Sven Tomforde** (st@informatik.uni-kiel.de)
+
+Department of Computer Science
+University of Kiel --- Kiel, Germany
+
+### Abstract
+
+Maritime communication networks face unique challenges due to the dynamic and sparse distribution of vessels, variable environmental conditions, and heterogeneous technological constraints. 
+With the increasing trend toward autonomy in maritime operations, these challenges become more pronounced.
+
+Modern maritime navigation systems integrate numerous high-bandwidth sensors—including cameras and LiDAR—to enhance environmental perception, whose exploitation generates increased data rate demand. 
+The increase is in contrast to traditional ship communication systems, which provide data rates in the order of kilobits per second. 
+
+This work proposes robust, multi-mean, collective adaptive software infrastructures to resiliently improve data collection by relaying data streams across multiple vessels. 
+In particular, we introduce a method to form dynamic clusters of vessels whose information is summarised and then transmitted, raising the probability that the information reaches its destination. 
+We validate our approach through simulation and show that the proposed clustering mechanism is capable of scaling up as new vessels are equipped with improved communication technologies.
 
 ### Goal and Scope
 
 The goal of this experiment is to evaluate the performance of different communication strategies for maritime vessels in the Kiel area.
 We evaluate the performance of the communication strategies in terms of data rate,
 i.e., the amount of data that can be communicated.
-
-In this scope, we propose a novel communication strategy based on a
-collective adaptive multi-relay scheme,
-where vessels are organised in self-organising coordination regions (SRC) and relay messages to each other to improve communication reliability.
-The experiment compares the performance of this communication strategy with the current standard communication method and two other communication strategies based on relaying messages between vessels.
 
 The communication algorithms compared in this experiment are:
 - **Direct Communication**: vessels communicate directly with shore stations, which is the current standard communication method. If vessels are out of range of communication with shore stations, they rely on satellite communication.
@@ -95,7 +116,7 @@ We simulation is performed with two free variables:
 
 Every experiment is performed 100 times, each time with a different seed.
 
-The simulation configuration can be found in the `src/main/resources/yaml/simulation.yml` file.
+The simulation configuration can be found and changed in the `src/main/resources/yaml/simulation.yml` file.
 
 ### AIS raw files data processing
 
@@ -143,9 +164,24 @@ The experiment can be run in three different ways:
 
 
 ### [Graphical-Run] Run Single Graphical Experiment
-Follow the instructions for reproducing the entire experiment natively, but instead of running `runAllBatch`, run `./gradlew runSimulationGraphic`.
+1. Install a Gradle-compatible version of [**Java**](https://docs.oracle.com/en/java/javase/21/install/overview-jdk-installation.html).
+  Use the [Gradle/Java compatibility matrix](https://docs.gradle.org/current/userguide/compatibility.html)
+  to learn which is the compatible version range.
+  The Version of Gradle used in this experiment can be found in the `gradle-wrapper.properties` file
+  located in the `gradle/wrapper` folder.
+2. Launch either:
+    - `./gradlew runSimulationGraphic` on Linux, MacOS, or Windows if a bash-compatible shell is available;
+    - `gradlew.bat runSimulationGraphic` on Windows cmd or Powershell;
 
 The simulation will start automatically.
+
+The graphical execution launches the simulation with default values for the free variables and the random seed,
+this can behaviour can be manually customized by changing the configuration in `src/main/yaml/simulation.yml`.
+
+Currently default values for variables are: 
+- _p5G_: 0.02
+- _f_: 0.2
+- _seed_: 0.0
 
 To make changes to existing experiments and explore/reuse,
 we recommend to use the **IntelliJ Idea IDE**.
