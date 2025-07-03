@@ -173,7 +173,7 @@ The experiment can be run in three different ways:
     - `./gradlew runSimulationGraphic` on Linux, MacOS, or Windows if a bash-compatible shell is available;
     - `gradlew.bat runSimulationGraphic` on Windows cmd or Powershell;
 
-The simulation will start automatically.
+The simulation will start automatically, but you are free to pause/resume it by pressing `P` on keyboard.
 
 The graphical execution launches the simulation with default values for the free variables and the random seed,
 this can behaviour can be manually customized by changing the configuration in `src/main/yaml/simulation.yml`.
