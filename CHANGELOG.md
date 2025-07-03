@@ -1,3 +1,9 @@
+## [1.3.1](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/compare/1.3.0...1.3.1) (2025-07-03)
+
+### Bug Fixes
+
+* fix CI flag +configuration when testing simulation ([f26e179](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/f26e179f423a780b2586c11ea9c72a3d4d8d9e2f))
+
 ## [1.2.0](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/compare/1.1.0...1.2.0) (2025-07-02)
 
 ### Features
