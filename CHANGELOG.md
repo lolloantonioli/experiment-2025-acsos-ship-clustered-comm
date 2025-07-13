@@ -1,3 +1,13 @@
+## [1.3.7](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/compare/1.3.6...1.3.7) (2025-07-13)
+
+### Bug Fixes
+
+* **deps:** update dependency xarray to v2025.7.1 ([#117](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/issues/117)) ([e619bcf](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/e619bcf229ca2083183599b6b2a021ebb7825ae2))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.3.6 [skip ci] ([715d9f9](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/715d9f9c937cddb8beeb98b5d5941c36b78c2b91))
+
 ## [1.3.6](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/compare/1.3.5...1.3.6) (2025-07-08)
 
 ### Bug Fixes
