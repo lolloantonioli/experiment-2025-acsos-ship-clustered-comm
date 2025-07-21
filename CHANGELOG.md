@@ -1,3 +1,13 @@
+## [1.3.11](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/compare/1.3.10...1.3.11) (2025-07-21)
+
+### Bug Fixes
+
+* increase font-size in charts ([ab8f4b4](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/ab8f4b45d4c96fc3d24d5414c021fd869d789235))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.3.10 [skip ci] ([4573c4b](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/4573c4b8d1f5eec9ae200176878feb7c76a75894))
+
 ## [1.3.10](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/compare/1.3.9...1.3.10) (2025-07-19)
 
 ### Bug Fixes
