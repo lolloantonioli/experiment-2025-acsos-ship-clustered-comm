@@ -365,8 +365,8 @@ if __name__ == '__main__':
         fig = plt.figure(figsize = figure_size)
         ax = fig.add_subplot(1, 1, 1)
         ax.set_title(title)
-        ax.set_xlabel(xlabel)
-        ax.set_ylabel(ylabel)
+        ax.set_xlabel(xlabel, fontsize = plot_text_size)
+        ax.set_ylabel(ylabel, fontsize = plot_text_size)
 #        ax.set_ylim(0)
 #        ax.set_xlim(min(xdata), max(xdata))
         index = 0
@@ -432,6 +432,8 @@ if __name__ == '__main__':
     import pandas as pd
     import pytz
     
+    plot_text_size = 12
+    
     def compute_dimensions():
         dimensions = {}
         import fnmatch
@@ -468,7 +470,7 @@ if __name__ == '__main__':
         formatted = result_time.strftime("%H:%M")
         return formatted
     
-    def custom_linechart_subplot(ax, ds, errors, evaluatingColumn, values, algorithm, color_value, isLastColumn=False):
+    def custom_linechart_subplot(ax, ds, errors, evaluatingColumn, values, algorithm, color_value, isLastColumn=False, isFirstRow=False):
        #evaluatingValues = ds.coords[evaluatingColumn].values
        viridis = plt.colormaps['viridis']
        for idx, x in enumerate(values):
@@ -479,18 +481,19 @@ if __name__ == '__main__':
            ax[idx].plot(ds[timeColumnName], dataset[evaluatingColumn], label=algorithm, color=viridis(color_value), linewidth=2.0)
            ax[idx].fill_between(ds[timeColumnName], sigmaMinus, sigmaPlus, color=viridis(color_value), alpha=0.2)
            if isLastColumn:
-               ax[idx].set_xlabel('Time ($HH:MM$)')
+               ax[idx].set_xlabel('Time ($HH:MM$)', fontsize = plot_text_size)
            ax[idx].set_xlim(0, 21600)
            ax[idx].set_ylim(-0.1, None)
            #ax[idx].set_yscale('symlog', linthresh=10)
            #ax[idx].set_ylabel('Squared Distance Error ($ m^2 $)')
-           ax[idx].set_title('$p_{5G}$' + f'= {x}')
+           if isFirstRow:
+               ax[idx].set_title('$p_{5G}$' + f'= {x}')
            #ax[idx].legend()
            #ax[idx].margins(x=0)
            ticks = np.arange(0.0, 21601, 3600)
            custom_labels = [seconds_to_datetime(x) for x in ticks]
            ax[idx].set_xticks(ticks)
-           ax[idx].set_xticklabels(custom_labels)  
+           ax[idx].set_xticklabels(custom_labels, fontsize = 10)  
     
     def linechart_datarate(means, errors):
         dimensions = compute_dimensions()
@@ -501,13 +504,13 @@ if __name__ == '__main__':
         updateFreq=[min(updateFreq), max(updateFreq)]
         gprob = ['0.0', '0.01', '0.05']
         fig, axes = plt.subplots(2, len(gprob), figsize=(11, 5), sharey=False, layout="constrained")
-        axes[0][0].set_ylabel(f'Update Freq. = {'{0:.4f}'.format(updateFreq[0])}Hz \n Data Rate (Kbps)')
-        axes[1][0].set_ylabel(f'Update Freq. = {'{0:.1f}'.format(updateFreq[1])}Hz \n Data Rate (Kbps)')
+        axes[0][0].set_ylabel(f'Update Freq. = {'{0:.4f}'.format(updateFreq[0])}Hz \n Data Rate (Kbps)', fontsize = plot_text_size)
+        axes[1][0].set_ylabel(f'Update Freq. = {'{0:.1f}'.format(updateFreq[1])}Hz \n Data Rate (Kbps)', fontsize = plot_text_size)
         for idf, freq in enumerate(updateFreq): 
-            custom_linechart_subplot(axes[idf], means.sel({"update-frequency": freq }), errors.sel({"update-frequency": freq }), 'bcdr[mean]', gprob, 'Mean $CSC$ $DR$', 0.25, idf+1==len(updateFreq)) #0.25*(idf+1.5)
-            custom_linechart_subplot(axes[idf], means.sel({"update-frequency": freq }), errors.sel({"update-frequency": freq }), 'b1dr[mean]', gprob, 'Mean $baseline$ $DR$', 0.5, idf+1==len(updateFreq)) #0.5
-            custom_linechart_subplot(axes[idf], means.sel({"update-frequency": freq }), errors.sel({"update-frequency": freq }), 'b2dr[mean]', gprob, 'Mean $Dist-MR$ $DR$', 0.75, idf+1==len(updateFreq)) #0.75
-            custom_linechart_subplot(axes[idf], means.sel({"update-frequency": freq }), errors.sel({"update-frequency": freq }), 'b3dr[mean]', gprob, 'Mean $DR-MR$ $DR$', 0.9, idf+1==len(updateFreq)) #0.9
+            custom_linechart_subplot(axes[idf], means.sel({"update-frequency": freq }), errors.sel({"update-frequency": freq }), 'bcdr[mean]', gprob, 'Mean $CSC$ $DR$', 0.25, idf+1==len(updateFreq), idf==0) #0.25*(idf+1.5)
+            custom_linechart_subplot(axes[idf], means.sel({"update-frequency": freq }), errors.sel({"update-frequency": freq }), 'b1dr[mean]', gprob, 'Mean $baseline$ $DR$', 0.5, idf+1==len(updateFreq), idf==0) #0.5
+            custom_linechart_subplot(axes[idf], means.sel({"update-frequency": freq }), errors.sel({"update-frequency": freq }), 'b2dr[mean]', gprob, 'Mean $Dist-MR$ $DR$', 0.75, idf+1==len(updateFreq), idf==0) #0.75
+            custom_linechart_subplot(axes[idf], means.sel({"update-frequency": freq }), errors.sel({"update-frequency": freq }), 'b3dr[mean]', gprob, 'Mean $DR-MR$ $DR$', 0.9, idf+1==len(updateFreq), idf==0) #0.9
         
         for idf, f in enumerate(updateFreq): 
             for idp, p in enumerate(gprob):
@@ -539,7 +542,7 @@ if __name__ == '__main__':
             axes.plot(ds[timeColumnName], dataset[metric], label='$p_{5G}$' +f' = {x}', color=vcolor, linewidth=2.0)
             axes.fill_between(ds[timeColumnName], sigmaMinus, sigmaPlus, color=vcolor, alpha=0.2)
         
-        axes.set_xlabel('Time ($HH:MM$)')
+        axes.set_xlabel('Time ($HH:MM$)', fontsize = plot_text_size)
         axes.set_xlim(0, 21600)
         axes.set_ylim(-0.1, None)
         #ax[idx].set_yscale('symlog', linthresh=10)
@@ -590,7 +593,7 @@ if __name__ == '__main__':
         for patch,color in zip(axes.patches,vcolors):
             patch.set_facecolor(color)
         axes.set_xticks(x_pos, gprob)        
-        axes.set_xlabel("$p_{5G}$")
+        axes.set_xlabel("$p_{5G}$", fontsize = plot_text_size)
         axes.set_title(label)
         axes.set_ylim(lowLim, upLim)
         save_fig(fig, plt, "barchart_"+metric)
@@ -631,14 +634,14 @@ if __name__ == '__main__':
         gprob = list(gprob)
         gprob.sort()
         fig, axes = plt.subplots(len(updateFreq), 1, figsize=(8, 8), sharey=False, layout="constrained")
-        axes[len(updateFreq)-1].set_xlabel("$p_{5G}$")
+        axes[len(updateFreq)-1].set_xlabel("$p_{5G}$", fontsize = plot_text_size)
         
         for idf, freq in enumerate(updateFreq): 
             custom_barchart_subplot(axes[idf], means.sel({"update-frequency": freq }), errors.sel({"update-frequency": freq }), freq, gprob, 0.25*(idf+1.5))    
-        axes[len(updateFreq)-1].legend(loc='lower right', framealpha=0.95)
-        axes[0].set_ylabel(f'Update Freq. = {'{0:.4f}'.format(updateFreq[0])}Hz\nData Rate (Kbps)')
-        axes[1].set_ylabel(f'Update Freq. = {'{0:.1f}'.format(updateFreq[1])}Hz\nData Rate (Kbps)')
-        axes[2].set_ylabel(f'Update Freq. = {'{0:.1f}'.format(updateFreq[2])}Hz\nData Rate (Kbps)')
+        axes[len(updateFreq)-1].legend(loc='lower right', framealpha=0.95, fontsize=10)
+        axes[0].set_ylabel(f'Update Freq. = {'{0:.4f}'.format(updateFreq[0])}Hz\nData Rate (Kbps)', fontsize = plot_text_size)
+        axes[1].set_ylabel(f'Update Freq. = {'{0:.1f}'.format(updateFreq[1])}Hz\nData Rate (Kbps)', fontsize = plot_text_size)
+        axes[2].set_ylabel(f'Update Freq. = {'{0:.1f}'.format(updateFreq[2])}Hz\nData Rate (Kbps)', fontsize = plot_text_size)
         
         
         save_fig(fig, plt,'barchart_datarate')
@@ -655,33 +658,34 @@ if __name__ == '__main__':
         plt.plot(df["x"], df["y_aprs"], label="APRS", linewidth=widthOfLine, color=viridis(0.65))
         plt.plot(df["x"], df["y_lora"], label="LoraWAN", linewidth=widthOfLine, color=viridis(0.9))
         plt.plot(df["x"], df["y_midband5g"], label="Midband 5G", linewidth=widthOfLine, color=viridis(0.1))
+        #plt.rc('font', size=12)
         
         def addHorizontalAxe(yValue, label, yOffset, position=6000):
-            plt.axhline(y=yValue, color='black', linestyle='--')
+            plt.axhline(y=yValue, lw=0.8, color='black', linestyle='--')
             plt.text(x=position, y=yValue+yOffset, s=label, color='black', verticalalignment='bottom' )
         
-        addHorizontalAxe(5.0, "Full-HD video (~5Mbps)", 0, 1.5)
-        addHorizontalAxe(2.5, "HD-Ready video (~2.5Mbps)", -1.55, 1.5)
-        addHorizontalAxe(0.320, "High-Quality audio (~320kbps)", 0, 1.5)
+        addHorizontalAxe(5.0, "Full-HD video (~5Mbps)", -1, 1.5)
+        addHorizontalAxe(2.5, "HD-Ready video (~2.5Mbps)", -1.65, 1.5)
+        addHorizontalAxe(0.320, "High-Quality audio (~320kbps)", -0.05, 1.5)
         #addHorizontalAxe(0.064, "Low-Quality audio (~64kbps)")
-        addHorizontalAxe(0.032, "Speech only audio (~32kbps)", -0.02, 1.5)
-        addHorizontalAxe(0.100, "Rich text data (~100kbps)", 0, 1.5)
-        addHorizontalAxe(0.001, "Position, ID, Direction (1kbps)", 0, 1.5)
-        addHorizontalAxe(0.0001, "Keep Alive Message (10bps)", 0, 1.5)
+        addHorizontalAxe(0.032, "Speech only audio (~32kbps)", -0.021, 1.5)
+        addHorizontalAxe(0.100, "Rich text data (~100kbps)", -0.02, 1.5)
+        addHorizontalAxe(0.001, "Position, ID, Direction (1kbps)", -0.000045, 1.5)
+        addHorizontalAxe(0.0001, "Keep Alive Message (10bps)", -0.00004, 1.5)
                 
         plt.yscale('symlog', linthresh=0.001)
         plt.xscale("log")
         plt.legend(loc="upper right")
         plt.xlim(1.0, 60000.0)
         plt.ylim(-0.0001, 10000.0)
-        plt.xlabel("Distance (meters)")
-        plt.ylabel("Data Rate (Mbps)")
+        plt.xlabel("Distance (meters)", fontsize = plot_text_size)
+        plt.ylabel("Data Rate (Mbps)", fontsize = plot_text_size)
         plt.tight_layout()
         Path(output_directory).mkdir(parents=True, exist_ok=True)
         plt.savefig(f'{output_directory}/metric_chart.pdf')
 
     
-    
+    plt.rc('font', size=plot_text_size)
     linechart_datarate(means[experiment], stdevs[experiment] )
     #linechart_clusteredmetrics(means[experiment], stdevs[experiment], 'n_clusters',  'Mean Number of Clusters', None, None)
     #linechart_clusteredmetrics(means[experiment], stdevs[experiment], 'cluster-size[mean]',  'Mean Cluster Size', None, None)
