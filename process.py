@@ -592,9 +592,9 @@ if __name__ == '__main__':
         axes.bar(x_pos, average, width=bar_width, yerr=std_dev, label='$p_{5G}$'+f' = {x}')
         for patch,color in zip(axes.patches,vcolors):
             patch.set_facecolor(color)
-        axes.set_xticks(x_pos, gprob)        
-        axes.set_xlabel("$p_{5G}$", fontsize = plot_text_size)
-        axes.set_title(label)
+        axes.set_xticks(x_pos, gprob, fontsize = 15)        
+        axes.set_xlabel("$p_{5G}$", fontsize = 16)
+        axes.set_title(label, fontsize = 16)
         axes.set_ylim(lowLim, upLim)
         save_fig(fig, plt, "barchart_"+metric)
         
@@ -633,16 +633,19 @@ if __name__ == '__main__':
         gprob = dimensions['g-probability']
         gprob = list(gprob)
         gprob.sort()
-        fig, axes = plt.subplots(len(updateFreq), 1, figsize=(8, 8), sharey=False, layout="constrained")
-        axes[len(updateFreq)-1].set_xlabel("$p_{5G}$", fontsize = plot_text_size)
+        fig, axes = plt.subplots(len(updateFreq), 1, figsize=(8, 9), sharey=False, layout="constrained")
+        axes[len(updateFreq)-1].set_xlabel("$p_{5G}$", fontsize = 15)
         
         for idf, freq in enumerate(updateFreq): 
             custom_barchart_subplot(axes[idf], means.sel({"update-frequency": freq }), errors.sel({"update-frequency": freq }), freq, gprob, 0.25*(idf+1.5))    
         axes[len(updateFreq)-1].legend(loc='lower right', framealpha=0.95, fontsize=10)
-        axes[0].set_ylabel(f'Update Freq. = {'{0:.4f}'.format(updateFreq[0])}Hz\nData Rate (Kbps)', fontsize = plot_text_size)
-        axes[1].set_ylabel(f'Update Freq. = {'{0:.1f}'.format(updateFreq[1])}Hz\nData Rate (Kbps)', fontsize = plot_text_size)
-        axes[2].set_ylabel(f'Update Freq. = {'{0:.1f}'.format(updateFreq[2])}Hz\nData Rate (Kbps)', fontsize = plot_text_size)
-        
+        axes[0].set_title(f'Update Freq. = {'{0:.4f}'.format(updateFreq[0])}Hz', fontsize = 16)
+        axes[1].set_title(f'Update Freq. = {'{0:.1f}'.format(updateFreq[1])}Hz', fontsize = 16)
+        axes[2].set_title(f'Update Freq. = {'{0:.1f}'.format(updateFreq[2])}Hz', fontsize = 16)
+        axes[0].set_ylabel('Data Rate (Kbps)', fontsize = 16)
+        axes[1].set_ylabel('Data Rate (Kbps)', fontsize = 16)
+        axes[2].set_ylabel('Data Rate (Kbps)', fontsize = 16)
+        plt.legend(loc='lower right', ncol=2)
         
         save_fig(fig, plt,'barchart_datarate')
         
@@ -652,7 +655,7 @@ if __name__ == '__main__':
         df = pd.read_csv("data/metric_data.csv")
         viridis = plt.colormaps['viridis']
         
-        plt.figure(figsize=(7, 3.5))
+        plt.figure(figsize=(7.5, 5))
         widthOfLine = 4
         plt.plot(df["x"], df["y_wifi"], label="Wi-Fi", linewidth=widthOfLine, color=viridis(0.4))
         plt.plot(df["x"], df["y_aprs"], label="APRS", linewidth=widthOfLine, color=viridis(0.65))
@@ -664,14 +667,15 @@ if __name__ == '__main__':
             plt.axhline(y=yValue, lw=0.8, color='black', linestyle='--')
             plt.text(x=position, y=yValue+yOffset, s=label, color='black', verticalalignment='bottom' )
         
-        addHorizontalAxe(5.0, "Full-HD video (~5Mbps)", -1, 1.5)
-        addHorizontalAxe(2.5, "HD-Ready video (~2.5Mbps)", -1.65, 1.5)
-        addHorizontalAxe(0.320, "High-Quality audio (~320kbps)", -0.05, 1.5)
+        vertical_alignment = 1.1
+        addHorizontalAxe(5.0, "Full-HD video (~5Mbps)", -0.2, vertical_alignment)
+        addHorizontalAxe(2.5, "HD-Ready video (~2.5Mbps)", -1.4, vertical_alignment)
+        addHorizontalAxe(0.320, "High-Quality audio (~320kbps)", -0.018, vertical_alignment)
         #addHorizontalAxe(0.064, "Low-Quality audio (~64kbps)")
-        addHorizontalAxe(0.032, "Speech only audio (~32kbps)", -0.021, 1.5)
-        addHorizontalAxe(0.100, "Rich text data (~100kbps)", -0.02, 1.5)
-        addHorizontalAxe(0.001, "Position, ID, Direction (1kbps)", -0.000045, 1.5)
-        addHorizontalAxe(0.0001, "Keep Alive Message (10bps)", -0.00004, 1.5)
+        addHorizontalAxe(0.032, "Speech only audio (~32kbps)", -0.018, vertical_alignment)
+        addHorizontalAxe(0.100, "Rich text data (~100kbps)", -0.005, vertical_alignment)
+        addHorizontalAxe(0.001, "Position, ID, Direction (1kbps)", 0.0, vertical_alignment)
+        addHorizontalAxe(0.0001, "Keep Alive Message (10bps)", 0.0, vertical_alignment)
                 
         plt.yscale('symlog', linthresh=0.001)
         plt.xscale("log")
