@@ -1,3 +1,13 @@
+## [1.3.21](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/compare/1.3.20...1.3.21) (2025-08-11)
+
+### Bug Fixes
+
+* **deps:** update actions/checkout action to v4.3.0 ([#133](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/issues/133)) ([78ecfca](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/78ecfca3c7c6d4e29d96b6871e0aa4e6361e511f))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.3.20 [skip ci] ([6767842](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/6767842b4e5b00e0f6df0eefa8b537275c3bfa4b))
+
 ## [1.3.20](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/compare/1.3.19...1.3.20) (2025-08-11)
 
 ### Bug Fixes
