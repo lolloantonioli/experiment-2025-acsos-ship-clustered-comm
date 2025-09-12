@@ -1,3 +1,13 @@
+## [1.3.52](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/compare/1.3.51...1.3.52) (2025-09-12)
+
+### Bug Fixes
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.143 ([#165](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/issues/165)) ([6e387b4](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/6e387b4c497547916e30ae0041c39c16bf4ae700))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.3.51 [skip ci] ([dd4a35d](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/dd4a35d7d237cbe1174243e28381cda781845d9f))
+
 ## [1.3.51](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/compare/1.3.50...1.3.51) (2025-09-11)
 
 ### Bug Fixes
