@@ -1,3 +1,13 @@
+## [1.3.60](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/compare/1.3.59...1.3.60) (2025-09-25)
+
+### Bug Fixes
+
+* **deps:** update dependency macos github actions runner to v15 ([#173](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/issues/173)) ([18d7f11](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/18d7f115364c7a729f204c5b0ecd2b576094e034))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.3.59 [skip ci] ([53a9040](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/53a9040cddddc3d240ca736508e0a88403bbcac8))
+
 ## [1.3.59](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/compare/1.3.58...1.3.59) (2025-09-24)
 
 ### Bug Fixes
