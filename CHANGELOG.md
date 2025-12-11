@@ -1,3 +1,13 @@
+## [1.3.70](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/compare/1.3.69...1.3.70) (2025-12-11)
+
+### Bug Fixes
+
+* **deps:** update plugin com.gradle.develocity to v4.3 ([#229](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/issues/229)) ([d4f9faa](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/d4f9faa11b4a5338b4ca4cd08ada29a2ea20848f))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.3.69 [skip ci] ([4185096](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/418509687137195e8d3cf7c2536861152dfcaec7))
+
 ## [1.3.69](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/compare/1.3.68...1.3.69) (2025-12-10)
 
 ### Bug Fixes
