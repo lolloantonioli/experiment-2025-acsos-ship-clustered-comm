@@ -1,3 +1,13 @@
+## [1.3.77](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/compare/1.3.76...1.3.77) (2025-12-13)
+
+### Bug Fixes
+
+* **deps:** update actions/upload-artifact action to v6 ([#233](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/issues/233)) ([3903286](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/390328604121da73426866834dd372a3e9bc83bf))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.3.76 [skip ci] ([9faf9ad](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/commit/9faf9ad3f4c00257e694784a1066fdf1b478fce2))
+
 ## [1.3.76](https://github.com/anitvam/experiment-2025-acsos-ship-clustered-comm/compare/1.3.75...1.3.76) (2025-12-13)
 
 ### Bug Fixes
