@@ -69,7 +69,7 @@ fun Aggregate<Int>.entrypoint(environment: CollektiveDevice<*>): Any? {
         // Baseline 1: direct communication with the station only
         val stationsNearby: Field<Int, Boolean> = neighboring(groundStation)
         val baseline1 =
-            stationsNearby.alignedMap(dataRates) { _, isStation, dataRate ->
+            stationsNearby.alignedMapValues(dataRates) { isStation, dataRate ->
                 dataRate.takeIf { isStation } ?: disconnected
             }
         val baseline1MaxData = baseline1.all
