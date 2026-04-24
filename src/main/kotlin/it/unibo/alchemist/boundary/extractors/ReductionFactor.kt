@@ -26,7 +26,7 @@ class ReductionFactor
     constructor(
         aggregatorNames: List<String> = listOf("mean", "median", "StandardDeviation"),
         precision: Int? = 3,
-    ) : AbstractAggregatingDoubleExporter(
+    ) : AbstractAggregatingDoubleExtractor(
             CommonFilters.ONLYFINITE.filteringPolicy,
             aggregatorNames,
             precision,

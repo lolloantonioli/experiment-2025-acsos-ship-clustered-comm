@@ -11,7 +11,7 @@ import it.unibo.alchemist.model.molecules.SimpleMolecule
  */
 class NumberOfClusters(
     override val columnNames: List<String> = listOf("n_clusters"),
-) : AbstractDoubleExporter() {
+) : AbstractDoubleExtractor()  {
     override fun <T> extractData(
         environment: Environment<T, *>,
         reaction: Actionable<T>?,

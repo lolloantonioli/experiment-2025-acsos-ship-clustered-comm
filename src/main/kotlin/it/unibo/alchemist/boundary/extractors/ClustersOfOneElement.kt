@@ -10,7 +10,7 @@ import it.unibo.alchemist.model.molecules.SimpleMolecule
  */
 class ClustersOfOneElement(
     override val columnNames: List<String> = listOf("clustersComposedOfOneElement"),
-) : AbstractDoubleExporter() {
+) : AbstractDoubleExtractor() {
     override fun <T> extractData(
         environment: Environment<T, *>,
         reaction: Actionable<T>?,

@@ -19,7 +19,7 @@ class ClusterSize
     constructor(
         aggregatorNames: List<String> = listOf("mean", "median", "StandardDeviation"),
         precision: Int? = null,
-    ) : AbstractAggregatingDoubleExporter(
+    ) : AbstractAggregatingDoubleExtractor(
             CommonFilters.ONLYFINITE.filteringPolicy,
             aggregatorNames,
             precision,

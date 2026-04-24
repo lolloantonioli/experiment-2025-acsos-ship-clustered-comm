@@ -33,7 +33,7 @@ import it.unibo.util.toInt
  */
 class DataRates(
     val mode: Mode,
-) : AbstractAggregatingDoubleExporter(
+) : AbstractAggregatingDoubleExtractor(
         CommonFilters.ONLYFINITE.filteringPolicy,
         listOf("mean"),
         3,
