@@ -245,12 +245,13 @@ fun Aggregate<Int>.computeNonCooperativeDataRate(
             else -> dataRates[parent]
         }.inject(environment, "$experimentName-parent-clean-data-rate")
     exchange(parentDataRate) { xcDataRates ->
-        val parentIsStation = stationsNearby[parent]
-        val actualUpload: DataRate = when {
-            //parent == localId -> 0.bitsPerSecond
-            parentIsStation -> dataRates[parent]
-            else -> xcDataRates[parent]
-        }
+        val actualUpload: DataRate =
+            dataRates.alignedMap(xcDataRates) { id, idealDR, actualDR ->
+                when {
+                    stationsNearby[id] -> idealDR
+                    else -> actualDR
+                }
+            }[parent]
         val sharedUpload: DataRate = (actualUpload - streamingBitRate) / childrenCount.toDouble()
         mapNeighborhood { id ->
             when (id) {
