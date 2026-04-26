@@ -17,8 +17,7 @@ import it.unibo.collektive.aggregate.api.mapNeighborhood
 import it.unibo.collektive.aggregate.api.neighboring
 import it.unibo.collektive.stdlib.collapse.any
 import it.unibo.collektive.stdlib.collapse.fold
-import it.unibo.collektive.stdlib.collapse.maxBy
-import it.unibo.collektive.stdlib.collapse.minBy
+import it.unibo.collektive.stdlib.collapse.idOfMinBy
 import it.unibo.collektive.stdlib.collapse.valueOfMaxBy
 import it.unibo.collektive.stdlib.consensus.Candidacy
 import it.unibo.collektive.stdlib.consensus.boundedElection
@@ -63,7 +62,7 @@ fun Aggregate<Int>.entrypoint(environment: CollektiveDevice<*>): Any? {
     // Once data rates have been established, 5g towers are cut off the computation,
     // they just relay the communication
     if (!thisIsA5gAntenna) {
-        dataRates.all.maxBy { it.value }.inject(environment, "max-data-rate") ?: disconnected
+        dataRates.neighbors.valueOfMaxBy { it.value }.inject(environment, "max-data-rate") ?: disconnected
         val timeToTransmit = dataRates.map { it.value.timeToTransmitOneMb }.inject(environment, "metric")
 
         // Baseline 1: direct communication with the station only
@@ -72,10 +71,10 @@ fun Aggregate<Int>.entrypoint(environment: CollektiveDevice<*>): Any? {
             stationsNearby.alignedMapValues(dataRates) { isStation, dataRate ->
                 dataRate.takeIf { isStation } ?: disconnected
             }
-        val baseline1MaxData = baseline1.all
+        val baseline1MaxData = baseline1.neighbors
             // Calcolo il field con il valore max e ne prendo solo il valore e non l'id
             .valueOfMaxBy { it.value }
-            .takeIf { it >= 3.megaBitsPerSecond } ?: disconnected
+            ?.takeIf { it >= 3.megaBitsPerSecond } ?: disconnected
         baseline1MaxData.max3Mbit().inject(environment, "baseline1-data-rate")
 
         // Baseline 2: min distance data rate
@@ -91,7 +90,7 @@ fun Aggregate<Int>.entrypoint(environment: CollektiveDevice<*>): Any? {
         // se uso alignedMap non posso usare method reference
         val distanceThroughRelay = distances.alignedMapValues(neighborDistances, Distance::plus)
         val baseline2Parent =
-            distanceThroughRelay.all
+            distanceThroughRelay.neighbors
                 .fold(localId to POSITIVE_INFINITY.meters) { current, entry ->
                     val distance = entry.value
                     when {
@@ -124,7 +123,7 @@ fun Aggregate<Int>.entrypoint(environment: CollektiveDevice<*>): Any? {
                 Double::plus
             )
         val baseline3Parent =
-            baseline3TimeToStationThroughRelays.all
+            baseline3TimeToStationThroughRelays.neighbors
                 .fold(localId to POSITIVE_INFINITY) { current, entry ->
                     val time = entry.value
                     when {
@@ -181,8 +180,9 @@ fun Aggregate<Int>.entrypoint(environment: CollektiveDevice<*>): Any? {
                     else -> POSITIVE_INFINITY
                 }
             }.all
-            // it.value equivale al second del Pair cioè a distanceToLeader
-            .minBy { it.value }.id
+            .fold(localId to POSITIVE_INFINITY) { current, entry ->
+                if (entry.value < current.second) entry.id to entry.value else current
+            }.first
             .inject(environment, "intra-cluster-relay")
         val intraClusterDataRate =
             dataRates[idOfIntraClusterRelay]
@@ -199,16 +199,16 @@ fun Aggregate<Int>.entrypoint(environment: CollektiveDevice<*>): Any? {
                 leader != myLeader && distance < localTimeToStation
             }.inject(environment, "potentialRelays")
         val myRelay =
-            potentialRelays
+            (potentialRelays
                 .alignedMapValues(timesToStationAround + timeToTransmit) { canRelay, distance ->
                     when {
                         canRelay -> distance
                         else -> POSITIVE_INFINITY
                     }
-                }.all
-                .minBy { it.value }.id
+                }.neighbors
+                .idOfMinBy { it.value } ?: localId)
                 .inject(environment, "myRelay")
-        neighboring(myRelay).all.any { it.value == localId }.inject(environment, "imRelay")
+        neighboring(myRelay).neighbors.any { it.value == localId }.inject(environment, "imRelay")
         val upstreamToRelay = dataRates[myRelay]
         val iHaveARelay = imLeader && myRelay != localId
         environment["leader-to-relay-data-rate"] =
@@ -233,7 +233,7 @@ fun Aggregate<Int>.computeNonCooperativeDataRate(
     stationsNearby: Field<Int, Boolean>,
     dataRates: Field<Int, DataRate>,
 ) {
-    val children = neighboring(parent).all
+    val children = neighboring(parent).neighbors
         .fold(mutableSetOf<Int>()) { accumulator, entry ->
             val neighborParentId = entry.value
             accumulator.also { if (neighborParentId == localId) it += entry.id }
@@ -245,13 +245,12 @@ fun Aggregate<Int>.computeNonCooperativeDataRate(
             else -> dataRates[parent]
         }.inject(environment, "$experimentName-parent-clean-data-rate")
     exchange(parentDataRate) { xcDataRates ->
-        val actualUpload: DataRate =
-            dataRates.alignedMap(xcDataRates) { id, idealDR, actualDR ->
-                when {
-                    stationsNearby[id] -> idealDR
-                    else -> actualDR
-                }
-            }[parent]
+        val parentIsStation = stationsNearby[parent]
+        val actualUpload: DataRate = when {
+            //parent == localId -> 0.bitsPerSecond
+            parentIsStation -> dataRates[parent]
+            else -> xcDataRates[parent]
+        }
         val sharedUpload: DataRate = (actualUpload - streamingBitRate) / childrenCount.toDouble()
         mapNeighborhood { id ->
             when (id) {
@@ -281,7 +280,7 @@ fun Aggregate<Int>.computeDataRates(
                     else -> disconnected
                 }
             }.inject("5g data rates")
-            .all.fold(disconnected) { acc, entry -> maxOf(acc, entry.value) }
+            .neighbors.fold(disconnected) { acc, entry -> maxOf(acc, entry.value) }
             .inject("5g data rate")
 
     val has5gAntenna =
@@ -291,7 +290,7 @@ fun Aggregate<Int>.computeDataRates(
                 else -> false
             },
         ) { it }.inject("has5gAntenna")
-    val antennasAround = neighboring(has5gAntenna).all.any { it.value } || has5gAntenna
+    val antennasAround = neighboring(has5gAntenna).all.any { it.value }
     return distances
         .map { entry ->
             val id = entry.id
