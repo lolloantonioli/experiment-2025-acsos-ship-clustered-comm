@@ -62,7 +62,7 @@ fun Aggregate<Int>.entrypoint(environment: CollektiveDevice<*>): Any? {
     // Once data rates have been established, 5g towers are cut off the computation,
     // they just relay the communication
     if (!thisIsA5gAntenna) {
-        dataRates.neighbors.valueOfMaxBy { it.value }.inject(environment, "max-data-rate") ?: disconnected
+        (dataRates.neighbors.valueOfMaxBy { it.value } ?: disconnected).inject(environment, "max-data-rate")
         val timeToTransmit = dataRates.map { it.value.timeToTransmitOneMb }.inject(environment, "metric")
 
         // Baseline 1: direct communication with the station only
@@ -90,7 +90,7 @@ fun Aggregate<Int>.entrypoint(environment: CollektiveDevice<*>): Any? {
         // se uso alignedMap non posso usare method reference
         val distanceThroughRelay = distances.alignedMapValues(neighborDistances, Distance::plus)
         val baseline2Parent =
-            distanceThroughRelay.neighbors
+            distanceThroughRelay.all
                 .fold(localId to POSITIVE_INFINITY.meters) { current, entry ->
                     val distance = entry.value
                     when {
@@ -199,14 +199,16 @@ fun Aggregate<Int>.entrypoint(environment: CollektiveDevice<*>): Any? {
                 leader != myLeader && distance < localTimeToStation
             }.inject(environment, "potentialRelays")
         val myRelay =
-            (potentialRelays
+            potentialRelays
                 .alignedMapValues(timesToStationAround + timeToTransmit) { canRelay, distance ->
                     when {
                         canRelay -> distance
                         else -> POSITIVE_INFINITY
                     }
-                }.neighbors
-                .idOfMinBy { it.value } ?: localId)
+                }.all
+                .fold(localId to POSITIVE_INFINITY) { current, entry ->
+                    if (entry.value < current.distanceToLeader) entry.id to entry.value else current
+                }.relayId()
                 .inject(environment, "myRelay")
         neighboring(myRelay).neighbors.any { it.value == localId }.inject(environment, "imRelay")
         val upstreamToRelay = dataRates[myRelay]
@@ -239,19 +241,12 @@ fun Aggregate<Int>.computeNonCooperativeDataRate(
             accumulator.also { if (neighborParentId == localId) it += entry.id }
         }.inject(environment, "$experimentName-children")
     val childrenCount = children.size.inject(environment, "$experimentName-children-count")
-    val parentDataRate: DataRate =
-        when {
-            parent == localId -> 0.bitsPerSecond
-            else -> dataRates[parent]
-        }.inject(environment, "$experimentName-parent-clean-data-rate")
+    val parentDataRate: DataRate = (dataRates[parent].takeUnless { parent == localId } ?: 0.bitsPerSecond)
+        .inject(environment, "$experimentName-parent-clean-data-rate")
+    val parentIsStation = stationsNearby[parent]
+    val parentIdealDR = dataRates[parent]
     exchange(parentDataRate) { xcDataRates ->
-        val actualUpload: DataRate =
-            dataRates.alignedMap(xcDataRates) { id, idealDR, actualDR ->
-                when {
-                    stationsNearby[id] -> idealDR
-                    else -> actualDR
-                }
-            }[parent]
+        val actualUpload: DataRate = xcDataRates[parent].takeUnless { parentIsStation } ?: parentIdealDR
         val sharedUpload: DataRate = (actualUpload - streamingBitRate) / childrenCount.toDouble()
         mapNeighborhood { id ->
             when (id) {

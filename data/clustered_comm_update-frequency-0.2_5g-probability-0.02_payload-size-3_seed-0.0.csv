@@ -1,5 +1,5 @@
 #####################################################################
-# Alchemist log file - simulation started at: 2026-04-26T11:16+0000 #
+# Alchemist log file - simulation started at: 2026-04-28T10:30+0000 #
 #####################################################################
 #
 # update-frequency = 0.2, 5g-probability = 0.02, payload-size = 3, seed = 0.0
@@ -8,6 +8,4 @@
 # time B1_DR[mean] DIST_MR[mean] DR_MR[mean] CSC[mean] reduction-factor[mean] reduction-factor[median] reduction-factor[StandardDeviation] export-intra-cluster-relay-data-rate-not-leader[mean] export-intra-cluster-relay-data-rate-not-leader[variance] export-intra-cluster-relay-data-rate-not-leader[median] leader-to-relay-data-rate[mean] leader-to-relay-data-rate[variance] leader-to-relay-data-rate[median] n_clusters cluster-size[mean] cluster-size[median] cluster-size[StandardDeviation] clustersComposedOfOneElement export-intra-cluster-relay-data-rate[mean] export-intra-cluster-relay-data-rate[variance] export-intra-cluster-relay-data-rate[median] export-baseline1-data-rate[mean] export-baseline1-data-rate[variance] export-baseline1-data-rate[median] export-baseline2-data-rate[mean] export-baseline2-data-rate[variance] export-baseline2-data-rate[median] export-baseline3-data-rate[mean] export-baseline3-data-rate[variance] export-baseline3-data-rate[median] distanceToLeader[mean] distanceToLeader[variance] distanceToLeader[median] 
 0.0 NaN 0.00 0.00 0.00 NaN NaN NaN NaN NaN NaN NaN NaN NaN 1.0 NaN NaN NaN 0.0 NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN
 0.0 NaN 0.00 0.00 0.00 NaN NaN NaN NaN NaN NaN NaN NaN NaN 1.0 NaN NaN NaN 0.0 NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN
-#####################################################################
-# End of data export. Simulation finished at: 2026-04-26T11:16+0000 #
-#####################################################################
+60.00566866630623 1.51e+03 1.56e+03 1.37e+03 1.92e+03 0.880 1.00 0.325 530922.7794451879 3.604313822767789E10 560165.2200838258 152.2025772558305 1363721.6472814253 8.804798177095792 136.0 3.0444444444444394 1.0 21.771495354023106 120.0 530922.7794451879 3.604313822767789E10 560165.2200838258 1518.2481751824816 2255153.9967954303 3000.0 203866.215550228 7.810709342758241E10 9822.522313778609 185236.2813803379 8.47463538045431E10 517.7457616830709 0.006086223250695921 1.4497811924859655E-4 0.0018086911129249915
