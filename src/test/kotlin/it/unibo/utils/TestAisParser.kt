@@ -32,7 +32,26 @@ class TestAisParser {
         assertTrue(aisMessage.isNotEmpty())
         println(aisMessage)
         val aisPayloads = AisPayload.Companion.from(aisMessage)
+        assertTrue(aisPayloads.isNotEmpty())
+        assertTrue(aisPayloads.any { it.speedOverGround != null })
+        assertTrue(aisPayloads.any { it.courseOverGround != null })
         println(aisPayloads)
+    }
+
+    @Test
+    fun testSogAndCogConversion() {
+        val customMessageParser = AisCustomMessageParser()
+        val example = "!AIVDM,1,1,,A,14eGrSPP00ncMJTO5C6aBwvP2D0?,0*7A"
+        customMessageParser.parseLine(example)
+        val output = customMessageParser.build()
+        val payload = AisPayload.from(
+            316013198,
+            java.time.Instant.EPOCH,
+            requireNotNull(output)
+        )
+        requireNotNull(payload)
+        assertEquals(0.0, payload.speedOverGround)
+        assertEquals(237.9, payload.courseOverGround)
     }
 
     @Test

@@ -2,6 +2,7 @@ package it.unibo.util.ais
 
 import dk.dma.ais.message.AisMessage
 import dk.dma.ais.message.IPositionMessage
+import dk.dma.ais.message.IVesselPositionMessage
 import it.unibo.util.gpx.ParsingUtils
 import java.time.Instant
 
@@ -10,12 +11,16 @@ import java.time.Instant
  * @param timestamp the timestamp related to the receipt of the message.
  * @param longitude the longitude of the boat.
  * @param latitude the latitude of the boat.
+ * @param speedOverGround the speed of the boat.
+ * @param courseOverGround the direction of the boat.
  */
 data class AisPayload(
     val boatId: Int,
     val timestamp: Instant,
     val longitude: Double,
     val latitude: Double,
+    val speedOverGround: Double?,
+    val courseOverGround: Double?,
 ) {
     /**
      * Static factory for [AisPayload].
@@ -38,11 +43,15 @@ data class AisPayload(
                 ParsingUtils.validateLongitude(aisMessage.pos.longitudeDouble) &&
                 ParsingUtils.validateLatitude(aisMessage.pos.latitudeDouble)
             ) {
+                // Se messaggio non contiene sog e cog, questi diventano null
+                val vesselPositionMessage = aisMessage as? IVesselPositionMessage
                 AisPayload(
                     boatId,
                     timestamp,
                     aisMessage.pos.longitudeDouble,
                     aisMessage.pos.latitudeDouble,
+                    if (vesselPositionMessage?.isSogValid == true) vesselPositionMessage.sog / 10.0 else null,
+                    if (vesselPositionMessage?.isCogValid == true) vesselPositionMessage.cog / 10.0 else null,
                 )
             } else {
                 null
