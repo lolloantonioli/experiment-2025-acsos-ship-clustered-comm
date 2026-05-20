@@ -31,10 +31,19 @@ object GpxFormatter {
                     <name>Boat $boatId</name>
                     <trkseg>
                         ${points.sortedBy { it.timestamp }.joinToString("\n") { point ->
+                    val extensions =
+                        point.gpxExtensions().takeIf { it.isNotEmpty() }?.let {
+                            """
+                            <extensions>
+                            $it
+                            </extensions>
+                            """.trimIndent()
+                        }.orEmpty()
                     """
                     <trkpt lat="${point.latitude}" lon="${point.longitude}">
                         <ele>0</ele>
                         <time>${point.timestamp}</time>
+                        $extensions
                     </trkpt>
                     """.trimIndent()
                 }}
@@ -53,4 +62,10 @@ object GpxFormatter {
             file.writeText(outputGpx)
         }
     }
+
+    private fun AisPayload.gpxExtensions(): String =
+        listOfNotNull(
+            speedOverGround?.let { "    <sog>$it</sog>" },
+            courseOverGround?.let { "    <cog>$it</cog>" },
+        ).joinToString("\n")
 }

@@ -39,9 +39,9 @@ object ParseRawNavigationData {
         outputFolder: String,
         day: String,
     ) {
-        val aisMessages: MutableMap<Instant, AisMessage> = mutableMapOf()
+        val aisMessages: MutableList<Pair<Instant, AisMessage>> = mutableListOf()
         dataToParse(inputFolder, day).forEach {
-            aisMessages.putAll(AisDecoder.parseFile(it))
+            aisMessages.addAll(AisDecoder.parseFile(it))
         }
         val aisPayloads =
             AisPayload

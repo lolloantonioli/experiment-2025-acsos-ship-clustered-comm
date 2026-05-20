@@ -5,6 +5,7 @@ import it.unibo.util.ais.AisDecoder
 import it.unibo.util.ais.AisPayload
 import it.unibo.util.gpx.GpxFormatter
 import java.io.File
+import java.nio.file.Files
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -68,12 +69,16 @@ class TestAisParser {
     fun testGpxGenerationFromAisData() {
         val aisMessage = AisDecoder.parseFile(dataToParse)
         assertTrue(aisMessage.isNotEmpty())
-        val xmlPath = File("src/main/resources/ais-sample/gpx-traces")
-        xmlPath.mkdirs()
+        val xmlPath = Files.createTempDirectory("ais-gpx-test").toFile()
         val aisPayloads = AisPayload.Companion.from(aisMessage)
-        val groupedByBoat = aisPayloads.groupBy { it.boatId }
-        println(groupedByBoat.count())
-        GpxFormatter.createGpxFileFromAisData(groupedByBoat.entries.first().value, xmlPath)
+        val payload =
+            aisPayloads.first {
+                it.speedOverGround != null && it.courseOverGround != null
+            }
+        GpxFormatter.createGpxFileFromAisData(listOf(payload), xmlPath)
+        val gpx = File(xmlPath, "${payload.boatId}.gpx").readText()
+        assertTrue("<sog>${payload.speedOverGround}</sog>" in gpx)
+        assertTrue("<cog>${payload.courseOverGround}</cog>" in gpx)
     }
 
     @Test

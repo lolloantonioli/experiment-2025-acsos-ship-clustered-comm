@@ -42,6 +42,9 @@ class AisCustomMessageParser {
                 println("Failure due to parsing message $message")
                 throw (e)
             }
+        } catch (e: RuntimeException) {
+            println("Malformed AIS sentence $message: IGNORED")
+            reset()
         }
     }
 

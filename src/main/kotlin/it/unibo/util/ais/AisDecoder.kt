@@ -11,9 +11,9 @@ object AisDecoder {
     fun parsePayload(
         payload: String,
         date: String,
-    ): Map<Instant, AisMessage> {
+    ): List<Pair<Instant, AisMessage>> {
         val aisMessageBuilder = AisCustomMessageParser()
-        val payloadDecoded: MutableMap<Instant, AisMessage> = mutableMapOf()
+        val payloadDecoded: MutableList<Pair<Instant, AisMessage>> = mutableListOf()
         payload.lines().forEach {
             if (it.startsWith("!DATE-TIME")) {
                 // Timestamp - NOT STANDARD AIS NMEA 0183
@@ -22,7 +22,7 @@ object AisDecoder {
                 val currentTimestamp = Instant.parse("${date}T${time}Z")
                 if (aisMessageBuilder.isComplete()) {
                     val aisMessage = aisMessageBuilder.build()
-                    if (aisMessage != null) payloadDecoded[currentTimestamp] = aisMessage
+                    if (aisMessage != null) payloadDecoded += currentTimestamp to aisMessage
                 }
             } else if (it != "") {
                 // Payload
@@ -36,7 +36,7 @@ object AisDecoder {
     /** Parses all the raw AIS lines contained in a [File].
      * @param file the [File] from which parse AIS info.
      **/
-    fun parseFile(file: File): Map<Instant, AisMessage> {
+    fun parseFile(file: File): List<Pair<Instant, AisMessage>> {
         val dateLong = file.name.substringAfterLast("/").substringBefore("-")
         val year = dateLong.take(4)
         val month = dateLong.drop(4).take(2)

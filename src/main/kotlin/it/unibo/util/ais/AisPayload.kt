@@ -58,14 +58,13 @@ data class AisPayload(
             }
 
         /**
-         * Creates an [AisPayload] object from Map of [AisMessage] and corresponding timestamps.
-         * @param map a [Map] of [Instant] and related [AisMessage].
+         * Creates an [AisPayload] object from a collection of [AisMessage] and corresponding timestamps.
+         * @param messages a collection of [Instant] and related [AisMessage].
          * @return a [List] of [AisPayload]
          */
-        fun from(map: Map<Instant, AisMessage>): List<AisPayload> =
-            map
-                .map {
-                    from(it.value.userId, it.key, it.value)
-                }.filterNotNull()
+        fun from(messages: Iterable<Pair<Instant, AisMessage>>): List<AisPayload> =
+            messages.mapNotNull {
+                from(it.second.userId, it.first, it.second)
+            }
     }
 }
