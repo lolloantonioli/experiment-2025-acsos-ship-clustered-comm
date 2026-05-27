@@ -17,7 +17,6 @@ import it.unibo.collektive.aggregate.api.mapNeighborhood
 import it.unibo.collektive.aggregate.api.neighboring
 import it.unibo.collektive.stdlib.collapse.any
 import it.unibo.collektive.stdlib.collapse.fold
-import it.unibo.collektive.stdlib.collapse.idOfMinBy
 import it.unibo.collektive.stdlib.collapse.valueOfMaxBy
 import it.unibo.collektive.stdlib.consensus.Candidacy
 import it.unibo.collektive.stdlib.consensus.boundedElection
@@ -25,12 +24,44 @@ import it.unibo.collektive.stdlib.doubles.FieldedDoubles.plus
 import it.unibo.collektive.stdlib.spreading.distanceTo
 import it.unibo.util.toDouble
 import kotlin.Double.Companion.POSITIVE_INFINITY
+import kotlin.math.abs
 
 private typealias RelayInfo<ID> = Pair<ID, Double>
+
+private const val COG_WEIGHT = 0.6
+private const val SOG_WEIGHT = 0.4
+private const val MAX_TOLERATED_SPEED_DIFF_KNOTS = 25.0
+private const val MOBILITY_PENALTY_MULTIPLIER = 2.0
+private const val HALF_TURN_DEGREES = 180.0
+private const val FULL_TURN_DEGREES = 360.0
 
 private fun <ID> RelayInfo<ID>.relayId(): ID = first
 
 private val RelayInfo<*>.distanceToLeader: Double get() = second
+
+/** Reads an optional Double property from the environment. */
+private fun CollektiveDevice<*>.getIfDefined(name: String): Double =
+    if (isDefined(name)) get<Double>(name) else Double.NaN
+
+private fun angularMobilityPenalty(
+    sourceCog: Double,
+    targetCog: Double,
+): Double = when {
+    sourceCog.isNaN() || targetCog.isNaN() -> 0.0
+    else -> {
+        val diff = abs(sourceCog - targetCog) % FULL_TURN_DEGREES
+        val angularDistance = if (diff > HALF_TURN_DEGREES) FULL_TURN_DEGREES - diff else diff
+        angularDistance / HALF_TURN_DEGREES
+    }
+}
+
+private fun speedMobilityPenalty(
+    sourceSog: Double,
+    targetSog: Double,
+): Double = when {
+    sourceSog.isNaN() || targetSog.isNaN() -> 0.0
+    else -> (abs(sourceSog - targetSog) / MAX_TOLERATED_SPEED_DIFF_KNOTS).coerceIn(0.0, 1.0)
+}
 
 /** Inject the information inside Alchemist's simulation node, for future retrieval.
  * @param T the value to inject
@@ -141,12 +172,26 @@ fun Aggregate<Int>.entrypoint(environment: CollektiveDevice<*>): Any? {
             stationsNearby,
             dataRates,
         )
-
-        // Clustered
+        val mySog = environment.getIfDefined("sog")
+        val myCog = environment.getIfDefined("cog")
+        val neighborSogs = neighboring(mySog)
+        val neighborCogs = neighboring(myCog)
+        val angularPenalty = neighborCogs.map { neighborCog ->
+            angularMobilityPenalty(myCog, neighborCog.value)
+        }
+        val speedPenalty = neighborSogs.map { neighborSog ->
+            speedMobilityPenalty(mySog, neighborSog.value)
+        }
+        val combinedMobilityPenalty = angularPenalty.alignedMapValues(speedPenalty) { cogPen, sogPen ->
+            (cogPen * COG_WEIGHT) + (sogPen * SOG_WEIGHT)
+        }.inject(environment, "mobility-penalty")
+        val mobilityAwareMetric = timeToTransmit.alignedMapValues(combinedMobilityPenalty) { time, penalty ->
+            time * (1.0 + (penalty * MOBILITY_PENALTY_MULTIPLIER))
+        }.inject(environment, "mobility-aware-metric")
         val clusteredTimeToStation: Double =
             distanceTo(
                 groundStation,
-                metric = timeToTransmit
+                metric = mobilityAwareMetric,
             ).inject(environment, "clustered-timeToStation")
 
         // Clustered
@@ -154,7 +199,7 @@ fun Aggregate<Int>.entrypoint(environment: CollektiveDevice<*>): Any? {
             boundedElection(
                 strength = -clusteredTimeToStation,
                 bound = streamingBitRate.timeToTransmitOneMb,
-                metric = timeToTransmit,
+                metric = mobilityAwareMetric,
                 selectBest = { c1, c2 ->
                     maxOf(
                         c1,
@@ -169,11 +214,11 @@ fun Aggregate<Int>.entrypoint(environment: CollektiveDevice<*>): Any? {
             alignedOn(myLeader) {
                 distanceTo(
                     imLeader,
-                    metric = timeToTransmit
+                    metric = mobilityAwareMetric,
                 ).inject(environment, "distanceToLeader")
             }
         val idOfIntraClusterRelay = neighboring(distanceToLeader)
-            .alignedMapValues(timeToTransmit, Double::plus)
+            .alignedMapValues(mobilityAwareMetric, Double::plus)
             .alignedMapValues(neighboring(myLeader)) { distance, leader ->
                 when (leader) {
                     myLeader -> distance
@@ -200,7 +245,7 @@ fun Aggregate<Int>.entrypoint(environment: CollektiveDevice<*>): Any? {
             }.inject(environment, "potentialRelays")
         val myRelay =
             potentialRelays
-                .alignedMapValues(timesToStationAround + timeToTransmit) { canRelay, distance ->
+                .alignedMapValues(timesToStationAround + mobilityAwareMetric) { canRelay, distance ->
                     when {
                         canRelay -> distance
                         else -> POSITIVE_INFINITY
