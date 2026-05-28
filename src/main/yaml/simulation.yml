@@ -59,6 +59,10 @@ _pools:
               cycle: false
               normalizer: "AlignToTime"
               normalizerArgs: [*start-time, true, false]
+          - type: LoadSogCogFromTrace
+            parameters:
+              path: "navigation-routes"
+              referenceTimeEpochSeconds: *start-time
       - time-distribution:
           type: Trigger
           parameters: [ 0 ]

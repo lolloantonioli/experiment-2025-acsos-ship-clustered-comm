@@ -76,6 +76,7 @@ val createGpxRoutes by tasks.registering(JavaExec::class) {
     val outputFolder = layout.buildDirectory.map { it.asFile.resolve("resources/main/navigation-routes") }
     inputs.dir(file(inputFolder))
     outputs.dir(outputFolder)
+    doFirst { delete(outputFolder) }
     mainClass.set("it.unibo.util.gpx.ParseRawNavigationData")
     classpath = sourceSets["main"].runtimeClasspath
     args(inputFolder, outputFolder.get().absolutePath, selectedDay)

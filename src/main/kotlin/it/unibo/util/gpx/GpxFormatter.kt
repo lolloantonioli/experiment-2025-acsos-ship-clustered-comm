@@ -24,11 +24,12 @@ object GpxFormatter {
         // Group AIS data by boatId
         val groupedData = aisData.groupBy { it.boatId }
 
-        groupedData.forEach { (boatId, points) ->
+        groupedData.toSortedMap().values.forEachIndexed { index, points ->
+            val boatId = "anon${(index + 1).toString().padStart(4, '0')}"
             val tracks =
                 """
                 <trk>
-                    <name>Boat $boatId</name>
+                    <name>$boatId</name>
                     <trkseg>
                         ${points.sortedBy { it.timestamp }.joinToString("\n") { point ->
                     val extensions =
