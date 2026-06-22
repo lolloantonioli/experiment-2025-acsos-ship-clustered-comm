@@ -507,10 +507,10 @@ if __name__ == '__main__':
         axes[0][0].set_ylabel(f'Update Freq. = {'{0:.4f}'.format(updateFreq[0])}Hz \n Data Rate (Kbps)', fontsize = plot_text_size)
         axes[1][0].set_ylabel(f'Update Freq. = {'{0:.1f}'.format(updateFreq[1])}Hz \n Data Rate (Kbps)', fontsize = plot_text_size)
         for idf, freq in enumerate(updateFreq): 
-            custom_linechart_subplot(axes[idf], means.sel({"update-frequency": freq }), errors.sel({"update-frequency": freq }), 'bcdr[mean]', gprob, 'Mean $CSC$ $DR$', 0.25, idf+1==len(updateFreq), idf==0) #0.25*(idf+1.5)
-            custom_linechart_subplot(axes[idf], means.sel({"update-frequency": freq }), errors.sel({"update-frequency": freq }), 'b1dr[mean]', gprob, 'Mean $baseline$ $DR$', 0.5, idf+1==len(updateFreq), idf==0) #0.5
-            custom_linechart_subplot(axes[idf], means.sel({"update-frequency": freq }), errors.sel({"update-frequency": freq }), 'b2dr[mean]', gprob, 'Mean $Dist-MR$ $DR$', 0.75, idf+1==len(updateFreq), idf==0) #0.75
-            custom_linechart_subplot(axes[idf], means.sel({"update-frequency": freq }), errors.sel({"update-frequency": freq }), 'b3dr[mean]', gprob, 'Mean $DR-MR$ $DR$', 0.9, idf+1==len(updateFreq), idf==0) #0.9
+            custom_linechart_subplot(axes[idf], means.sel({"update-frequency": freq }), errors.sel({"update-frequency": freq }), 'CSC[mean]', gprob, 'Mean $CSC$ $DR$', 0.25, idf+1==len(updateFreq), idf==0) #0.25*(idf+1.5)
+            custom_linechart_subplot(axes[idf], means.sel({"update-frequency": freq }), errors.sel({"update-frequency": freq }), 'B1_DR[mean]', gprob, 'Mean $baseline$ $DR$', 0.5, idf+1==len(updateFreq), idf==0) #0.5
+            custom_linechart_subplot(axes[idf], means.sel({"update-frequency": freq }), errors.sel({"update-frequency": freq }), 'DIST_MR[mean]', gprob, 'Mean $Dist-MR$ $DR$', 0.75, idf+1==len(updateFreq), idf==0) #0.75
+            custom_linechart_subplot(axes[idf], means.sel({"update-frequency": freq }), errors.sel({"update-frequency": freq }), 'DR_MR[mean]', gprob, 'Mean $DR-MR$ $DR$', 0.9, idf+1==len(updateFreq), idf==0) #0.9
         
         for idf, f in enumerate(updateFreq): 
             for idp, p in enumerate(gprob):
@@ -600,10 +600,10 @@ if __name__ == '__main__':
         
     def custom_barchart_subplot(ax, ds, errors, freq, probabilities, color_value):  
        evaluatingColumns = {
-           "bcdr[mean]": 'Mean $CSC$ $DR$', 
-           "b1dr[mean]": 'Mean $baseline$ $DR$', 
-           "b2dr[mean]": 'Mean $Dist-MR$ $DR$',
-           "b3dr[mean]": 'Mean $DR-MR$ $DR$'
+           "CSC[mean]": 'Mean $CSC$ $DR$', 
+           "B1_DR[mean]": 'Mean $baseline$ $DR$', 
+           "DIST_MR[mean]": 'Mean $Dist-MR$ $DR$',
+           "DR_MR[mean]": 'Mean $DR-MR$ $DR$'
        }
        viridis = plt.colormaps['viridis']
        bar_width = 0.2
